@@ -54,8 +54,6 @@ namespace Ordering.API.RabbitMQ
                 var command = _mapper.Map<CheckoutOrderCommand>(basketCheckoutEvent);
                 var result = await _mediator.Send(command); //for how mediator is implemented, this will call -> CheckoutOrderHandler, implementing the interface that specify in input the command "CheckoutOrderCommand" -> IRequestHandler<CheckoutOrderCommand, OrderResponse>
 
-                //writeFile();
-                //Console.WriteLine("ORDERING API CONSUMED an event from the queue "+ EventBusConstants.BasketCheckoutQueue + " ->" + DateTimeOffset.UtcNow);
             }
         }
 
