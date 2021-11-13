@@ -4,6 +4,7 @@ using Cube_Auction.Infrastructure.Data;
 using Cube_Auction.Infrastructure.Repository;
 using Cube_Auction.Infrastructure.Repository.Base;
 using EventBusRabbitMQ;
+using EventBusRabbitMQ.Producer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.EntityFrameworkCore;
@@ -80,6 +81,8 @@ namespace Cube_Auction.API
 
                 return new RabbitMQConnection(factory);
             });
+
+            services.AddSingleton<EventBusRabbitMQProducer>();
 
             //LD Note, this will not work if repositories are not declared before "AutoMaper"
             // in this "ConfigureServices" method

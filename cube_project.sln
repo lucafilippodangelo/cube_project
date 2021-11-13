@@ -43,13 +43,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ASecondConsumerLd", "src\AS
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Cube_Auction", "Cube_Auction", "{25A1C654-F061-413A-A719-6DD6F101DC07}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cube_Auction.API", "src\Cube_Auction\Cube_Auction.API\Cube_Auction.API.csproj", "{65D5A1EC-EB39-44E9-B1FF-980E8DD38CF0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cube_Auction.API", "src\Cube_Auction\Cube_Auction.API\Cube_Auction.API.csproj", "{65D5A1EC-EB39-44E9-B1FF-980E8DD38CF0}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cube_Auction.Application", "src\Cube_Auction\Cube_Auction.Application\Cube_Auction.Application\Cube_Auction.Application.csproj", "{76750653-566B-469C-818D-FF6C8FF8E3B9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cube_Auction.Application", "src\Cube_Auction\Cube_Auction.Application\Cube_Auction.Application\Cube_Auction.Application.csproj", "{76750653-566B-469C-818D-FF6C8FF8E3B9}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cube_Auction.Core", "src\Cube_Auction\Cube_Auction.Core\Cube_Auction.Core\Cube_Auction.Core.csproj", "{591C395A-373D-4A53-8E34-76027A2B1CAF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cube_Auction.Core", "src\Cube_Auction\Cube_Auction.Core\Cube_Auction.Core\Cube_Auction.Core.csproj", "{591C395A-373D-4A53-8E34-76027A2B1CAF}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cube_Auction.Infrastructure", "src\Cube_Auction\Cube_Auction.Infrastructure\Cube_Auction.Infrastructure\Cube_Auction.Infrastructure.csproj", "{31C42FD6-A2C5-4C17-A8EC-45578D174773}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cube_Auction.Infrastructure", "src\Cube_Auction\Cube_Auction.Infrastructure\Cube_Auction.Infrastructure\Cube_Auction.Infrastructure.csproj", "{31C42FD6-A2C5-4C17-A8EC-45578D174773}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
