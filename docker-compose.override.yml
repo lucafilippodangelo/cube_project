@@ -53,9 +53,22 @@ services:
             - "EventBus:HostName=rabbitmq"
         depends_on:
             - orderdb
-            #- rabbitmq 
+            - rabbitmq 
         ports:
             - "8007:80"
+
+    cube_bid.api:
+        container_name: cube_bidapi
+        restart: on-failure
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - "ConnectionStrings:Redis=basketdb:6379" #LD replace "localhost" with the container name "basketdb"
+            - "EventBus:HostName=rabbitmq"
+        depends_on:
+            - basketdb
+            - rabbitmq 
+        ports:
+            - "8008:80"
 
     basketdb:
         container_name: basketdb
