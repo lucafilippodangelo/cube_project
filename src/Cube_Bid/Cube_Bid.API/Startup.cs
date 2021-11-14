@@ -1,5 +1,9 @@
+using Cube_Bid.API.Data;
+using Cube_Bid.API.Data.Interfaces;
 using Cube_Bid.API.Extentions;
 using Cube_Bid.API.RabbitMq;
+using Cube_Bid.API.Repositories;
+using Cube_Bid.API.Repositories.Interfaces;
 using EventBusRabbitMQ;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -8,6 +12,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.OpenApi.Models;
 using RabbitMQ.Client;
+using StackExchange.Redis;
 
 namespace Cube_Bid.API
 {
@@ -25,6 +30,25 @@ namespace Cube_Bid.API
         {
 
             services.AddControllers();
+
+            #region Project Dependencies
+
+            services.AddTransient<IBidContext, BidContext>();
+            services.AddTransient<IBidReposirory, BidReposirory>();
+
+            //services.AddAutoMapper(typeof(Startup));
+
+            #endregion
+
+            #region Redis Dependencies
+
+            services.AddSingleton<ConnectionMultiplexer>(sp =>
+            {
+                var configuration = ConfigurationOptions.Parse(Configuration.GetConnectionString("Redis"), true);
+                return ConnectionMultiplexer.Connect(configuration);
+            });
+
+            #endregion
 
             #region RabbitMQ Dependencies
 

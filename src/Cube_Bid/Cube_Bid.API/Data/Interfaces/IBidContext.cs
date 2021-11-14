@@ -9,5 +9,6 @@ namespace Cube_Bid.API.Data.Interfaces
     public interface IBidContext
     {
         IDatabase Redis { get; }
+        public IServer Server { get; }
     }
 }
