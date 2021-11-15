@@ -5,11 +5,9 @@ using System.Threading.Tasks;
 
 namespace Cube_Bid.API.Repositories.Interfaces
 {
-    public interface IBidReposirory
+    public interface IAuctionReposirory
     {
-        List<string> GetBidsByPattern(string pattern);
-
-        public string? InsertBid(string key, string value);
-
+        List<string> AuctionInsertTest();
+        void AuctionFlushTest();
     }
 }

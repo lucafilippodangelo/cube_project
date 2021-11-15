@@ -7,6 +7,7 @@ namespace Cube_Bid.API.Entities
 {
     public class Bid
     {
+        public string Id { get; set; } //this will be a guid
         public string AuctionName { get; set; }
         public double Amount { get; set; }  
         public DateTime DateTime { get; set; } 

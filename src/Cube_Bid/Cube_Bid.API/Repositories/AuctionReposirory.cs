@@ -11,37 +11,49 @@ namespace Cube_Bid.API.Repositories
 {
 
 
-    public class BidReposirory : IBidReposirory
+    public class AuctionReposirory : IAuctionReposirory
     {
-        private readonly IBidContext _context;
+        private readonly IAuctionContext _context;
 
-        public BidReposirory(IBidContext context)
+        public AuctionReposirory(IAuctionContext context)
         {
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-
-        public List<string> GetBidsByPattern(string searchPattern)
+        public List<string> AuctionInsertTest()
         {
             List<string> aListPOfStrings = new List<string>();
 
-            var allValues2 = _context.Server.Keys(pattern: searchPattern);
-            foreach (var key in allValues2)
+            //mset and msetnx
+            KeyValuePair<RedisKey, RedisValue>[] values = {
+               new KeyValuePair<RedisKey, RedisValue>("a:1", "a uno"),
+               new KeyValuePair<RedisKey, RedisValue>("a:2", "a due"),
+               new KeyValuePair<RedisKey, RedisValue>("b:1", "b due")
+            };
+
+            if (_context.Redis.StringSet(values))
             {
-                string currentString = (key.ToString() + " - " + _context.Redis.StringGet(key).ToString());
-                aListPOfStrings.Add(currentString);
+
+                //get the specific key
+                RedisKey[] myKeys = { "a:1" };
+                var allValues = _context.Redis.StringGet(myKeys);
+                var ld = string.Join(",", allValues);
+
+                //get the specific key
+                RedisKey[] myKeys2 = { "a*" };
+                var allValues2 = _context.Server.Keys(pattern: "a*");
+                
+                
+                foreach (var key in allValues2)
+                {
+                    string currentString = ( key.ToString() + " - " + _context.Redis.StringGet(key).ToString ());
+                    aListPOfStrings.Add(currentString);
+                }
+
+                
+
             }
             return aListPOfStrings;
-        }
-
-        public string? InsertBid(string key, string value)
-        {
-            _context.Redis.StringSet(key, value);
-
-            var val = _context.Redis.StringGet(key);
-            var toBeReturned = ("StringGet({0}) value is {1}", key, val);
-            return toBeReturned.ToString();
-
 
             /*
             public async Task<IEnumerable<Bid>> GetBidsByAuction(string userName)
@@ -84,7 +96,6 @@ namespace Cube_Bid.API.Repositories
                 _context.Redis.KeyDelete(key);
             }
         }
-
 
     }
 }
