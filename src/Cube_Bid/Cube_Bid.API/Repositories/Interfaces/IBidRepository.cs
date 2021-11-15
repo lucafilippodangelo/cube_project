@@ -7,6 +7,8 @@ namespace Cube_Bid.API.Repositories.Interfaces
 {
     public interface IBidReposirory
     {
-        void BidTest();
+        List<string> BidGetTest();
+        List<string> BidInsertTest();
+        void BidFlushTest();
     }
 }

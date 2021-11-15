@@ -20,8 +20,24 @@ namespace Cube_Bid.API.Repositories
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-        public void BidTest()
+
+        public List<string> BidGetTest()
         {
+            List<string> aListPOfStrings = new List<string>();
+
+            var allValues2 = _context.Server.Keys(pattern: "a*");
+            foreach (var key in allValues2)
+            {
+                string currentString = (key.ToString() + " - " + _context.Redis.StringGet(key).ToString());
+                aListPOfStrings.Add(currentString);
+            }
+            return aListPOfStrings;
+        }
+
+
+        public List<string> BidInsertTest()
+        {
+            List<string> aListPOfStrings = new List<string>();
 
             //mset and msetnx
             KeyValuePair<RedisKey, RedisValue>[] values = {
@@ -42,36 +58,17 @@ namespace Cube_Bid.API.Repositories
                 RedisKey[] myKeys2 = { "a*" };
                 var allValues2 = _context.Server.Keys(pattern: "a*");
                 
-                List<string> aListPOfStrings = new List<string>();
+                
                 foreach (var key in allValues2)
                 {
                     string currentString = ( key.ToString() + " - " + _context.Redis.StringGet(key).ToString ());
                     aListPOfStrings.Add(currentString);
                 }
+
                 
-                //Add another string
-                //mset and msetnx
-                KeyValuePair<RedisKey, RedisValue>[] values3 = {
-                       new KeyValuePair<RedisKey, RedisValue>("a:3", "a tre"),
-                       new KeyValuePair<RedisKey, RedisValue>("a:4", "a quattro")
-                    };
-
-                _context.Redis.StringSet(values3);
-
-                //check again
-                RedisKey[] myKeys3 = { "a*" };
-                var allValues3 = _context.Server.Keys(pattern: "a*");
-
-                List<string> aListPOfStrings3 = new List<string>();
-                foreach (var key in allValues3)
-                {
-                    string currentString = (key.ToString() + " - " + _context.Redis.StringGet(key).ToString());
-                    aListPOfStrings.Add(currentString);
-                }
-
-
 
             }
+            return aListPOfStrings;
 
             /*
             public async Task<IEnumerable<Bid>> GetBidsByAuction(string userName)
@@ -101,17 +98,19 @@ namespace Cube_Bid.API.Repositories
             }
             */
 
-
-            /*
-            public async Task<bool> DeleteBasket(string userName)
-            {
-                return await _context
-                                .Redis
-                                .KeyDeleteAsync(userName);
-            }
-            */
-
-
         }
+
+        public void BidFlushTest()
+        {
+            //get the specific key
+            var allValues2 = _context.Server.Keys(pattern: "a*");
+
+            List<string> aListPOfStrings = new List<string>();
+            foreach (var key in allValues2)
+            {
+                _context.Redis.KeyDelete(key);
+            }
+        }
+
     }
 }

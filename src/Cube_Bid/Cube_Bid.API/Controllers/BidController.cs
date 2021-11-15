@@ -2,11 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Collections.Generic;
 using System.Net;
 
 namespace Cube_Bid.API.Controllers
 {
-    [Route("api/v1/[controller]")]
+    [Route("api/v1/[controller]/[action]")]
     [ApiController]
     public class BidController : ControllerBase
     {
@@ -24,13 +25,25 @@ namespace Cube_Bid.API.Controllers
 
 
         [HttpGet]
-        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
-        public void TestBid(string userName)
+        [ProducesResponseType(typeof(List<string>), (int)HttpStatusCode.OK)]
+        public List<string> TestBidGet()
         {
-            _repository.BidTest();
+            return _repository.BidGetTest();
         }
 
+        [HttpGet]
+        [ProducesResponseType(typeof(List<string>), (int)HttpStatusCode.OK)]
+        public List<string> TestBidInsert(string userName)
+        {
+            return _repository.BidInsertTest();
+        }
 
+        [HttpGet]
+        [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
+        public void TestBidFlushAllDb(string userName)
+        {
+            _repository.BidFlushTest();
+        }
 
     }
 }
