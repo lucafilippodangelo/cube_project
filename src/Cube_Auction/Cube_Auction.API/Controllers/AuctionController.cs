@@ -1,5 +1,6 @@
 ﻿using Cube_Auction.Application;
 using Cube_Auction.Core.Repositories;
+using Cube_Bid.API.Entities;
 using EventBusRabbitMQ.Common;
 using EventBusRabbitMQ.Events;
 using EventBusRabbitMQ.Producer;
@@ -29,7 +30,7 @@ namespace Cube_Auction.API.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<AuctionResponse>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IEnumerable<AuctionResponse>>> GetAuctions()
+        public async Task<ActionResult<IEnumerable<AuctionResponse>>> GetAuctions_Note_MSSQL()
         {
             var auctions = await _repository.GetAuctions();
             return Ok(auctions);
@@ -37,16 +38,16 @@ namespace Cube_Auction.API.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<AuctionResponse>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IEnumerable<AuctionResponse>>> GetAuctionByName(string name)
+        public async Task<ActionResult<IEnumerable<AuctionResponse>>> GetAuctionByName_Note_MSSQL(string name)
         {
             var auctions = await _repository.GetAuctionByName(name);
             return Ok(auctions);
         }
 
-        //Added for testing purpose
+
         [HttpPost]
         [ProducesResponseType(typeof(AuctionResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> PostAuction([FromBody] AuctionCommand command)
+        public async Task<IActionResult> PostAuctiontToQueue_Note_recordInMSSQL_thenSendToQueue_NotStoredInRedis([FromBody] AuctionCommand command)
         {
             var result = await _repository.PostAuction(command);
 
@@ -68,6 +69,61 @@ namespace Cube_Auction.API.Controllers
             }
 
             return Ok(result);
+        }
+
+
+        [HttpPost]
+        [ProducesResponseType(typeof(AuctionResponse), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> PostOneBidToQueue_Note_StoredInRedis([FromBody] BidCommand command)
+        {
+
+
+            //simulating a mapper from entity to event. At the moment is a speculat matching of attributes
+            BidCreationEvent eventMessage = new BidCreationEvent();
+            eventMessage.Id = command.Id;
+            eventMessage.Amount = command.Amount;
+            eventMessage.DateTime = DateTime.UtcNow;
+            eventMessage.AuctionName = command.AuctionName;
+            eventMessage.AuctionSubscriberName = command.AuctionSubscriberName;
+
+            try
+            {
+                _eventBus.PublishBidCreation(EventBusConstants.BidCreationQueue, eventMessage); //need to create event object
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "ERROR Publishing event BID CREATION: {RequestId} from {Name}", eventMessage.Id, "Bid");
+                throw;
+            }
+
+            return Ok();
+        }
+
+        //LD TO BE MOVED IN UT
+        [HttpPost]
+        [ProducesResponseType(typeof(AuctionResponse), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> PostManyBidsToQueue_Note_StoredInRedis([FromBody] BidCommand command)
+        {
+
+            //simulating a mapper from entity to event. At the moment is a speculat matching of attributes
+            BidCreationEvent eventMessage = new BidCreationEvent();
+            eventMessage.Id = command.Id;
+            eventMessage.Amount = command.Amount;
+            eventMessage.DateTime = DateTime.UtcNow;
+            eventMessage.AuctionName = command.AuctionName;
+            eventMessage.AuctionSubscriberName = command.AuctionSubscriberName;
+
+            try
+            {
+                _eventBus.PublishBidCreation(EventBusConstants.BidCreationQueue, eventMessage); //need to create event object
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "ERROR Publishing event BID CREATION: {RequestId} from {Name}", eventMessage.Id, "Bid");
+                throw;
+            }
+
+            return Ok();
         }
 
     }

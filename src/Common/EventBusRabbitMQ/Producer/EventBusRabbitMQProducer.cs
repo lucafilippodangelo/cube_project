@@ -17,6 +17,7 @@ namespace EventBusRabbitMQ.Producer
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
         }
 
+        //LD NOT USED
         public void PublishBasketCheckout(string queueName, BasketCheckoutEvent publishModel)
         {
             using (var channel = _connection.CreateModel())
@@ -51,14 +52,13 @@ namespace EventBusRabbitMQ.Producer
             }
         }
 
-        public void PublishAuctionCreation(string queueName, AuctionCreationEvent publishModel)
+
+
+        public void PublishCreation(string queueName, Object publishModel)
         {
             using (var channel = _connection.CreateModel())
             {
                 channel.QueueDeclare(queue: queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
-
-                //LD second queue
-                channel.QueueDeclare(queue: EventBusConstants.SecondConsumerQueue, durable: false, exclusive: false, autoDelete: false, arguments: null);
 
                 var message = JsonConvert.SerializeObject(publishModel);
                 var body = Encoding.UTF8.GetBytes(message);
@@ -70,6 +70,16 @@ namespace EventBusRabbitMQ.Producer
                 channel.ConfirmSelect();
                 channel.BasicPublish(exchange: "", routingKey: queueName, mandatory: true, basicProperties: properties, body: body);
             }
+        }
+
+        public void PublishBidCreation(string queueName, BidCreationEvent publishModel)
+        {
+            PublishCreation(queueName, publishModel);
+        }
+
+        public void PublishAuctionCreation(string queueName, AuctionCreationEvent publishModel)
+        {
+            PublishCreation(queueName, publishModel);
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using EventBusRabbitMQ;
+﻿using Cube_Bid.API.Repositories.Interfaces;
+using EventBusRabbitMQ;
 using EventBusRabbitMQ.Common;
 using EventBusRabbitMQ.Events;
 using Newtonsoft.Json;
@@ -13,28 +14,32 @@ namespace Cube_Bid.API.RabbitMq
     public class EventBusRabbitMQConsumer
     {
         private readonly IRabbitMQConnection _connection;
-        //private readonly IOrderRepository _repository; // we added this in order to resolve in mediatR
+        private readonly IBidReposirory _bidRepository;
 
-        public EventBusRabbitMQConsumer(IRabbitMQConnection connection)//, IMediator mediator, IMapper mapper, IOrderRepository repository)
+        public EventBusRabbitMQConsumer(IRabbitMQConnection connection, IBidReposirory bidRepository)//, IMediator mediator, IMapper mapper, IOrderRepository repository)
         {
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
-            //_mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-            //_mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
-            //_repository = repository ?? throw new ArgumentNullException(nameof(repository));
+            _bidRepository = bidRepository ?? throw new ArgumentNullException(nameof(_bidRepository));
         }
 
         //LD going to consume from "AuctionCreationQueue"
         public void Consume()
         {
+            //LD consuming the queue "AuctionCreationQueue" ------------------------------------
             var channel = _connection.CreateModel();
             channel.QueueDeclare(queue: EventBusConstants.AuctionCreationQueue, durable: false, exclusive: false, autoDelete: false, arguments: null);
-
             var consumer = new EventingBasicConsumer(channel);
-
             //Create event when something receive
             consumer.Received += ReceivedEvent;
-
             channel.BasicConsume(queue: EventBusConstants.AuctionCreationQueue, autoAck:true, consumer: consumer);
+
+            //LD consuming the queue "AuctionCreationQueue" ------------------------------------
+            var channelTwo = _connection.CreateModel();
+            channelTwo.QueueDeclare(queue: EventBusConstants.BidCreationQueue, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            var consumerTwo = new EventingBasicConsumer(channelTwo);
+            //Create event when something receive
+            consumerTwo.Received += ReceivedEvent;
+            channelTwo.BasicConsume(queue: EventBusConstants.BidCreationQueue, autoAck: true, consumer: consumerTwo);
         }
 
         //ORDERS APPLICATION
@@ -43,9 +48,15 @@ namespace Cube_Bid.API.RabbitMq
             if (e.RoutingKey == EventBusConstants.AuctionCreationQueue)
             {
                 var message = Encoding.UTF8.GetString(e.Body.Span);
-                var basketCheckoutEvent = JsonConvert.DeserializeObject<AuctionCreationEvent>(message);
+                var Event = JsonConvert.DeserializeObject<AuctionCreationEvent>(message);
+            }
 
-                // LD ->> ALL THE REPOSITORY STUFF
+            if (e.RoutingKey == EventBusConstants.BidCreationQueue)
+            {
+                var message = Encoding.UTF8.GetString(e.Body.Span);
+                var Event = JsonConvert.DeserializeObject<BidCreationEvent>(message);
+
+                _bidRepository.InsertBid(Event.AuctionName + "-"+ Event.Id, Event.AuctionSubscriberName + "-" + Event.Amount + "-" + Event.DateTime);
             }
         }
 

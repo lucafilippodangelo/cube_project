@@ -28,14 +28,14 @@ namespace Cube_Bid.API.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(List<string>), (int)HttpStatusCode.OK)]
-        public List<string> TestAuctionInsert()
+        public List<string> TestAuctionInsert_Note_RedisDb_ByAPI()
         {
             return _repository.AuctionInsertTest();
         }
 
         [HttpGet]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
-        public void TestAuctionFlushAllDbAStar(string userName)
+        public void TestAuctionFlushAllDbAStar_Note_RedisDb_ByAPI(string userName)
         {
             _repository.AuctionFlushTest();
         }
@@ -50,7 +50,7 @@ namespace Cube_Bid.API.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
-        public string CreateBid(string key, string value)
+        public string CreateBid_Note_RedisDb_ByAPI(string key, string value)
         {
             return _bidRepository.InsertBid(key,value);
         }
