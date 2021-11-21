@@ -23,7 +23,6 @@ namespace Cube_Bid.API.Data
             var ff = Redis.Multiplexer.Configuration;
             
             Server = redisConnection.GetServer(dd);
-            //Server = redisConnection.GetServer("basketdb", 6379);
         }
 
         public IDatabase Redis { get; }

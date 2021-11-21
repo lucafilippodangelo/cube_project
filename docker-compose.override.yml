@@ -1,28 +1,41 @@
 version: '3.4'
 
+
+networks:
+  app-tier:
+    driver: bridge
+
 services:
 
-    basketdb:
-        container_name: basketdb
-        restart: always        
+    redis:
+        container_name: redis
+        restart: always  
+        networks:
+            - app-tier
         ports:
             - "6379:6379"
 
     orderdb:
         container_name: orderdb
         user: root
+        networks:
+            - app-tier
         ports:
             - "1433:1433"
         environment:
             SA_PASSWORD: "SwN12345678"
             ACCEPT_EULA: "Y"
 
+
     rabbitmq:
         container_name: rabbitmq
         restart: always
+        networks:
+            - app-tier
         ports:
             - "5672:5672"
             - "15672:15672" 
+
 
     cube_auction.api:
         container_name: cube_auctionapi
@@ -34,19 +47,24 @@ services:
         depends_on:
             - orderdb
             - rabbitmq 
+        networks:
+            - app-tier
         ports:
             - "8007:80"
+
 
     cube_bid.api:
         container_name: cube_bidapi
         restart: on-failure
         environment:
             - ASPNETCORE_ENVIRONMENT=Development
-            - "ConnectionStrings:Redis=basketdb:6379" #LD this replace "localhost" with the container name "basketdb" I have in appsettings
+            - "ConnectionStrings:Redis=redis:6379" #LD this replace "localhost" with the container name "redis" I have in appsettings
             - "EventBus:HostName=rabbitmq"
         depends_on:
-            - basketdb
+            - redis
             - rabbitmq 
+        networks:
+            - app-tier
         ports:
             - "8008:80"
 

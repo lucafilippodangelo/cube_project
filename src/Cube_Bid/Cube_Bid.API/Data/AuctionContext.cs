@@ -15,7 +15,10 @@ namespace Cube_Bid.API.Data
         {
             _redisConnection = redisConnection;
             Redis = redisConnection.GetDatabase();
-            Server = redisConnection.GetServer("localhost:6379");
+
+            var ff = Redis.Multiplexer.Configuration;
+
+            Server = redisConnection.GetServer(ff);//("localhost:6379");
         }
 
         public IDatabase Redis { get; }

@@ -2,7 +2,7 @@ version: '3.4'
 
 services:
 
-    basketdb:
+    redis:
         image: redis #LD redis official image
 
     orderdb:
