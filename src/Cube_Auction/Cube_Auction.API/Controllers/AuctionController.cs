@@ -102,26 +102,30 @@ namespace Cube_Auction.API.Controllers
         //LD TO BE MOVED IN UT
         [HttpPost]
         [ProducesResponseType(typeof(AuctionResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> PostManyBidsToQueue_Note_StoredInRedis([FromBody] BidCommand command)
+        public async Task<IActionResult> PostManyBidsToQueue_Note_StoredInRedis()
         {
 
-            //simulating a mapper from entity to event. At the moment is a speculat matching of attributes
-            BidCreationEvent eventMessage = new BidCreationEvent();
-            eventMessage.Id = command.Id;
-            eventMessage.Amount = command.Amount;
-            eventMessage.DateTime = DateTime.UtcNow;
-            eventMessage.AuctionName = command.AuctionName;
-            eventMessage.AuctionSubscriberName = command.AuctionSubscriberName;
+            for (int i = 0; i < 10000; i++)
+            {
+                //simulating a mapper from entity to event. At the moment is a speculat matching of attributes
+                BidCreationEvent eventMessage = new BidCreationEvent();
+                eventMessage.Id = "IdBid="+i;
+                eventMessage.Amount = 100;
+                eventMessage.DateTime = DateTime.UtcNow;
+                eventMessage.AuctionName = "a1";
+                eventMessage.AuctionSubscriberName = "SubscriberLuca";
 
-            try
-            {
-                _eventBus.PublishBidCreation(EventBusConstants.BidCreationQueue, eventMessage); //need to create event object
+                try
+                {
+                    _eventBus.PublishBidCreation(EventBusConstants.BidCreationQueue, eventMessage); //need to create event object
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "ERROR Publishing event BID CREATION: {RequestId} from {Name}", eventMessage.Id, "Bid");
+                    throw;
+                }
             }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "ERROR Publishing event BID CREATION: {RequestId} from {Name}", eventMessage.Id, "Bid");
-                throw;
-            }
+            
 
             return Ok();
         }

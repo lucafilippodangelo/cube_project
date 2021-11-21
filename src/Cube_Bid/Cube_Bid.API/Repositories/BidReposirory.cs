@@ -23,15 +23,28 @@ namespace Cube_Bid.API.Repositories
 
         public List<string> GetBidsByPattern(string searchPattern)
         {
+            var time001 = DateTime.UtcNow;
             List<string> aListPOfStrings = new List<string>();
 
+            //this takes 2 seconds to query and read 1000 records ----------------------
             var allValues2 = _context.Server.Keys(pattern: searchPattern);
+
+            var time002 = DateTime.UtcNow;
             foreach (var key in allValues2)
             {
                 string currentString = (key.ToString() + " - " + _context.Redis.StringGet(key).ToString());
                 aListPOfStrings.Add(currentString);
             }
-            return aListPOfStrings;
+            //this takes 2 seconds END--------------------------------------------------
+
+            var time004 = DateTime.UtcNow;
+
+            //ordering by string itself
+            var ordered = aListPOfStrings.OrderBy(a => a).ToList();
+            var count = ordered.Count();
+            var time003 = DateTime.UtcNow;
+
+            return ordered;
         }
 
         public string? InsertBid(string key, string value)

@@ -43,7 +43,7 @@ namespace Cube_Bid.API.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(List<string>), (int)HttpStatusCode.OK)]
-        public List<string> GetByKeyPrefixPattern(string pattern)
+        public List<string> GetByKeyPrefixPattern2(string pattern)
         {
             return _bidRepository.GetBidsByPattern(pattern);
         }

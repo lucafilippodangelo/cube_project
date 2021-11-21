@@ -2,23 +2,11 @@ version: '3.4'
 
 services:
 
-    #catalogdb:
-    #    container_name: catalogdb
-    #    restart: always
-    #    volumes:
-    #        - ./data:/data/db 
-    #        #- ${WEBAPP_STORAGE_HOME}/site:/data/db
-    #    ports:
-    #        - "27017:27017"
-
-
-
-    rabbitmq:
-        container_name: rabbitmq
-        restart: always
+    basketdb:
+        container_name: basketdb
+        restart: always        
         ports:
-            - "5672:5672"
-            - "15672:15672" 
+            - "6379:6379"
 
     orderdb:
         container_name: orderdb
@@ -29,20 +17,12 @@ services:
             SA_PASSWORD: "SwN12345678"
             ACCEPT_EULA: "Y"
 
-        
-    ordering.api:
-        container_name: orderingapi
-        restart: on-failure
-        environment:
-            - ASPNETCORE_ENVIRONMENT=Development
-            - "ConnectionStrings:OrderConnection=Server=orderdb;Database=OrderDb;User Id=sa;Password=SwN12345678"
-            - "EventBus:HostName=rabbitmq"
-        depends_on:
-            - orderdb
-            - rabbitmq 
+    rabbitmq:
+        container_name: rabbitmq
+        restart: always
         ports:
-            - "8002:80"
-
+            - "5672:5672"
+            - "15672:15672" 
 
     cube_auction.api:
         container_name: cube_auctionapi
@@ -62,7 +42,7 @@ services:
         restart: on-failure
         environment:
             - ASPNETCORE_ENVIRONMENT=Development
-            - "ConnectionStrings:Redis=basketdb:6379" #LD replace "localhost" with the container name "basketdb"
+            - "ConnectionStrings:Redis=basketdb:6379" #LD this replace "localhost" with the container name "basketdb" I have in appsettings
             - "EventBus:HostName=rabbitmq"
         depends_on:
             - basketdb
@@ -70,28 +50,46 @@ services:
         ports:
             - "8008:80"
 
-    basketdb:
-        container_name: basketdb
-        restart: always        
-        ports:
-            - "6379:6379"
 
-    basket.api:
-        container_name: basketapi
-        environment:
-            - ASPNETCORE_ENVIRONMENT=Development
-            - "ConnectionStrings:Redis=basketdb:6379" #LD replace "localhost" with the container name "basketdb"
-            - "EventBus:HostName=rabbitmq" #we do point to the container "rabbitMQ"
-        depends_on:
-            - basketdb
-            - rabbitmq
-        volumes:
-            - ./home/.microsoft/usersecrets/:/root/.microsoft/usersecrets
-            - ./home/.aspnet/https:/root/.aspnet/https/
-            #- ${HOME}/.microsoft/usersecrets/:/root/.microsoft/usersecrets 
-            #- ${HOME}/.aspnet/https:/root/.aspnet/https/ 
-        ports:
-            - "8001:80"
+
+    #catalogdb:
+    #    container_name: catalogdb
+    #    restart: always
+    #    volumes:
+    #        - ./data:/data/db 
+    #        #- ${WEBAPP_STORAGE_HOME}/site:/data/db
+    #    ports:
+    #        - "27017:27017"
+            
+    #ordering.api:
+    #    container_name: orderingapi
+    #    restart: on-failure
+    #    environment:
+    #        - ASPNETCORE_ENVIRONMENT=Development
+    #        - "ConnectionStrings:OrderConnection=Server=orderdb;Database=OrderDb;User Id=sa;Password=SwN12345678"
+    #        - "EventBus:HostName=rabbitmq"
+    #    depends_on:
+    #        - orderdb
+    #        - rabbitmq 
+    #    ports:
+    #        - "8002:80"
+
+    #basket.api:
+    #    container_name: basketapi
+    #    environment:
+    #        - ASPNETCORE_ENVIRONMENT=Development
+    #        - "ConnectionStrings:Redis=basketdb:6379" #LD replace "localhost" with the container name "basketdb"
+    #        - "EventBus:HostName=rabbitmq" #we do point to the container "rabbitMQ"
+    #    depends_on:
+    #        - basketdb
+    #        - rabbitmq
+    #    volumes:
+    #        - ./home/.microsoft/usersecrets/:/root/.microsoft/usersecrets
+    #        - ./home/.aspnet/https:/root/.aspnet/https/
+    #        #- ${HOME}/.microsoft/usersecrets/:/root/.microsoft/usersecrets 
+    #        #- ${HOME}/.aspnet/https:/root/.aspnet/https/ 
+    #    ports:
+    #        - "8001:80"
 
     #catalog.api:
     #    container_name: catalogapi
