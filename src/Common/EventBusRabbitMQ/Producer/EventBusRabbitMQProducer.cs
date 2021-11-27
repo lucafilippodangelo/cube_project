@@ -53,6 +53,15 @@ namespace EventBusRabbitMQ.Producer
         }
 
 
+        public void PublishBidCreation(string queueName, BidCreationEvent publishModel)
+        {
+            PublishCreation(queueName, publishModel);
+        }
+
+        public void PublishAuctionCreation(string queueName, AuctionCreationEvent publishModel)
+        {
+            PublishCreation(queueName, publishModel);
+        }
 
         public void PublishCreation(string queueName, Object publishModel)
         {
@@ -72,14 +81,6 @@ namespace EventBusRabbitMQ.Producer
             }
         }
 
-        public void PublishBidCreation(string queueName, BidCreationEvent publishModel)
-        {
-            PublishCreation(queueName, publishModel);
-        }
 
-        public void PublishAuctionCreation(string queueName, AuctionCreationEvent publishModel)
-        {
-            PublishCreation(queueName, publishModel);
-        }
     }
 }

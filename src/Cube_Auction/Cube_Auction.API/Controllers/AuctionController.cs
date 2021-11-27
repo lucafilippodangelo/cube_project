@@ -88,7 +88,7 @@ namespace Cube_Auction.API.Controllers
 
             try
             {
-                _eventBus.PublishBidCreation(EventBusConstants.BidCreationQueue, eventMessage); //need to create event object
+                _eventBus.PublishBidCreation(EventBusConstants.BidCreationQueue_Redis, eventMessage); //need to create event object
             }
             catch (Exception ex)
             {
@@ -99,10 +99,9 @@ namespace Cube_Auction.API.Controllers
             return Ok();
         }
 
-        //LD TO BE MOVED IN UT
         [HttpPost]
         [ProducesResponseType(typeof(AuctionResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> PostManyBidsToQueue_Note_StoredInRedis()
+        public async Task<IActionResult> PostManyBidsToQueue_Note_StoredIn_Redis()
         {
 
             for (int i = 0; i < 10000; i++)
@@ -117,7 +116,7 @@ namespace Cube_Auction.API.Controllers
 
                 try
                 {
-                    _eventBus.PublishBidCreation(EventBusConstants.BidCreationQueue, eventMessage); //need to create event object
+                    _eventBus.PublishBidCreation(EventBusConstants.BidCreationQueue_Redis, eventMessage); //need to create event object
                 }
                 catch (Exception ex)
                 {
@@ -130,5 +129,35 @@ namespace Cube_Auction.API.Controllers
             return Ok();
         }
 
+
+        [HttpPost]
+        [ProducesResponseType(typeof(AuctionResponse), (int)HttpStatusCode.OK)]
+        public async Task<IActionResult> PostManyBidsToQueue_Note_StoredIn_Mongo()
+        {
+
+            for (int i = 0; i < 10000; i++)
+            {
+                //simulating a mapper from entity to event. At the moment is a speculat matching of attributes
+                BidCreationEvent eventMessage = new BidCreationEvent();
+                eventMessage.Id = "IdBid=" + i;
+                eventMessage.Amount = 100;
+                eventMessage.DateTime = DateTime.UtcNow;
+                eventMessage.AuctionName = "a1";
+                eventMessage.AuctionSubscriberName = "SubscriberLuca";
+
+                try
+                {
+                    _eventBus.PublishBidCreation(EventBusConstants.BidCreationQueue_Mongo, eventMessage); //need to create event object
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "ERROR Publishing event BID CREATION: {RequestId} from {Name}", eventMessage.Id, "Bid");
+                    throw;
+                }
+            }
+
+
+            return Ok();
+        }
     }
 }

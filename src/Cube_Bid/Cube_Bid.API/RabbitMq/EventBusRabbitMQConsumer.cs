@@ -35,11 +35,21 @@ namespace Cube_Bid.API.RabbitMq
 
             //LD consuming the queue "AuctionCreationQueue" ------------------------------------
             var channelTwo = _connection.CreateModel();
-            channelTwo.QueueDeclare(queue: EventBusConstants.BidCreationQueue, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            channelTwo.QueueDeclare(queue: EventBusConstants.BidCreationQueue_Redis, durable: false, exclusive: false, autoDelete: false, arguments: null);
             var consumerTwo = new EventingBasicConsumer(channelTwo);
             //Create event when something receive
             consumerTwo.Received += ReceivedEvent;
-            channelTwo.BasicConsume(queue: EventBusConstants.BidCreationQueue, autoAck: true, consumer: consumerTwo);
+            channelTwo.BasicConsume(queue: EventBusConstants.BidCreationQueue_Redis, autoAck: true, consumer: consumerTwo);
+
+            //LD consuming the queue "AuctionCreationQueue" ------------------------------------
+            var channelThree = _connection.CreateModel();
+            channelThree.QueueDeclare(queue: EventBusConstants.BidCreationQueue_Mongo, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            var consumerThree = new EventingBasicConsumer(channelThree);
+            //Create event when something receive
+            consumerThree.Received += ReceivedEvent;
+            channelThree.BasicConsume(queue: EventBusConstants.BidCreationQueue_Mongo, autoAck: true, consumer: consumerThree);
+
+
         }
 
         //ORDERS APPLICATION
@@ -51,13 +61,22 @@ namespace Cube_Bid.API.RabbitMq
                 var Event = JsonConvert.DeserializeObject<AuctionCreationEvent>(message);
             }
 
-            if (e.RoutingKey == EventBusConstants.BidCreationQueue)
+            if (e.RoutingKey == EventBusConstants.BidCreationQueue_Redis)
             {
                 var message = Encoding.UTF8.GetString(e.Body.Span);
                 var Event = JsonConvert.DeserializeObject<BidCreationEvent>(message);
 
                 _bidRepository.InsertBid(Event.AuctionName + "-"+ Event.Id, Event.AuctionSubscriberName + "-" + Event.Amount + "-" + Event.DateTime);
             }
+
+            if (e.RoutingKey == EventBusConstants.BidCreationQueue_Mongo)
+            {
+                var message = Encoding.UTF8.GetString(e.Body.Span);
+                var Event = JsonConvert.DeserializeObject<BidCreationEvent>(message);
+
+                _bidRepository.InsertBid(Event.AuctionName + "-" + Event.Id, Event.AuctionSubscriberName + "-" + Event.Amount + "-" + Event.DateTime);
+            }
+
         }
 
         public void Disconnect()
