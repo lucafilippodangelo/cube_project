@@ -74,7 +74,7 @@ namespace Cube_Bid.API.RabbitMq
                 var message = Encoding.UTF8.GetString(e.Body.Span);
                 var Event = JsonConvert.DeserializeObject<BidCreationEvent>(message);
 
-                _bidRepository.InsertBid(Event.AuctionName + "-" + Event.Id, Event.AuctionSubscriberName + "-" + Event.Amount + "-" + Event.DateTime);
+                //_bidRepository.InsertBid(Event.AuctionName + "-" + Event.Id, Event.AuctionSubscriberName + "-" + Event.Amount + "-" + Event.DateTime);
             }
 
         }

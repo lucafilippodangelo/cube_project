@@ -7,13 +7,21 @@ networks:
 
 services:
 
-    redis:
+    db_redis:
         container_name: redis
         restart: always  
         networks:
             - app-tier
         ports:
             - "6379:6379"
+
+    db_mongo:
+        container_name: mongo
+        restart: always
+        volumes:
+            - ./data:/data/db 
+        ports:
+            - "27017:27017"
 
     orderdb:
         container_name: orderdb
@@ -58,10 +66,11 @@ services:
         restart: on-failure
         environment:
             - ASPNETCORE_ENVIRONMENT=Development
-            - "ConnectionStrings:Redis=redis:6379" #LD this replace "localhost" with the container name "redis" I have in appsettings
+            - "ConnectionStrings:Redis=db_redis:6379" #LD this replace "localhost" with the container name "redis" I have in appsettings
             - "EventBus:HostName=rabbitmq"
         depends_on:
-            - redis
+            - db_mongo
+            - db_redis
             - rabbitmq 
         networks:
             - app-tier
@@ -70,14 +79,7 @@ services:
 
 
 
-    #catalogdb:
-    #    container_name: catalogdb
-    #    restart: always
-    #    volumes:
-    #        - ./data:/data/db 
-    #        #- ${WEBAPP_STORAGE_HOME}/site:/data/db
-    #    ports:
-    #        - "27017:27017"
+
             
     #ordering.api:
     #    container_name: orderingapi

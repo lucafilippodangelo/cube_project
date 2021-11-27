@@ -2,8 +2,11 @@ version: '3.4'
 
 services:
 
-    redis:
-        image: redis #LD redis official image
+    db_redis:
+        image: redis 
+
+    db_mongo:
+        image: mongo
 
     orderdb:
         image: mcr.microsoft.com/mssql/server
@@ -24,8 +27,7 @@ services:
             context: .
             dockerfile: src/Cube_Bid/Cube_Bid.API/Dockerfile
         
-    #catalogdb:
-    #    image: mongo
+
 
     #catalog.api:
     #    image: ${DOCKER_REGISTRY-}catalogapi

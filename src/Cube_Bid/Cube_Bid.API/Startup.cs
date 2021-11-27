@@ -34,7 +34,7 @@ namespace Cube_Bid.API
             #region Project Dependencies
             services.AddTransient<IAuctionContext, AuctionContext>();
             services.AddTransient<IAuctionReposirory, AuctionReposirory>();
-            services.AddTransient<IBidContext, BidContext>();
+            services.AddTransient<IBidContext, BidContextRedis>();
             services.AddTransient<IBidReposirory, BidReposirory>();
 
             //services.AddAutoMapper(typeof(Startup));
