@@ -9,8 +9,8 @@ namespace Cube_Bid.API.Entities
 {
     public class Bid
     {
-        [BsonElement("Name")]
-        public string Name { get; set; }
+        [BsonElement("BidName")]
+        public string BidName { get; set; }
 
         //[BsonId]
         [BsonRepresentation(BsonType.ObjectId)]

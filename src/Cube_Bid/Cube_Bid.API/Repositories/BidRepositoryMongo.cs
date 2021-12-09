@@ -28,6 +28,18 @@ namespace Cube_Bid.API.Repositories
                             .ToListAsync();
         }
 
+        public async Task<IEnumerable<Bid>> GetBidsByAuctionName(string anInputString)
+        {
+            FilterDefinition<Bid> filter = Builders<Bid>.Filter.Eq(p => p.AuctionName, anInputString);
+
+
+
+            return await _context
+                          .Bids
+                          .Find(filter)
+                          .ToListAsync();
+        }
+
         public async Task Create(Bid aBid)
         {
             try

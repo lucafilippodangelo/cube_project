@@ -78,7 +78,8 @@ namespace Cube_Bid.API.RabbitMq
                 var Event = JsonConvert.DeserializeObject<BidCreationEvent>(message);
 
                 Bid aBid = new Bid();
-                aBid.Name = Event.AuctionName + "-" + Event.Id;
+                aBid.BidName = "Event Id: "+Event.Id;
+                aBid.AuctionName = Event.AuctionName;
                 aBid.Amount = Event.Amount;
                 aBid.DateTime = Event.DateTime;
 

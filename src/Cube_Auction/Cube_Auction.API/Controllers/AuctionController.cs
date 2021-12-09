@@ -30,7 +30,7 @@ namespace Cube_Auction.API.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<AuctionResponse>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IEnumerable<AuctionResponse>>> GetAuctions_Note_MSSQL()
+        public async Task<ActionResult<IEnumerable<AuctionResponse>>> MSSQL_GetAuctions_Note()
         {
             var auctions = await _repository.GetAuctions();
             return Ok(auctions);
@@ -38,7 +38,7 @@ namespace Cube_Auction.API.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<AuctionResponse>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IEnumerable<AuctionResponse>>> GetAuctionByName_Note_MSSQL(string name)
+        public async Task<ActionResult<IEnumerable<AuctionResponse>>> MSSQL_GetAuctionByName_Note(string name)
         {
             var auctions = await _repository.GetAuctionByName(name);
             return Ok(auctions);
@@ -47,7 +47,7 @@ namespace Cube_Auction.API.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(AuctionResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> PostAuctiontToQueue_Note_recordInMSSQL_thenSendToQueue_NotStoredInRedis([FromBody] AuctionCommand command)
+        public async Task<IActionResult> MSSQL_PostAuctiontToQueue_Note_recordInMSSQL_thenSendToQueue_NotStoredInRedis([FromBody] AuctionCommand command)
         {
             var result = await _repository.PostAuction(command);
 
@@ -74,7 +74,7 @@ namespace Cube_Auction.API.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(AuctionResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> PostOneBidToQueue_Note_StoredInRedis([FromBody] BidCommand command)
+        public async Task<IActionResult> REDIS_PostOneBidToQueue_Note_StoredInRedis([FromBody] BidCommand command)
         {
 
 
@@ -101,10 +101,10 @@ namespace Cube_Auction.API.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(AuctionResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> PostManyBidsToQueue_Note_StoredIn_Redis()
+        public async Task<IActionResult> REDIS_PostManyBidsToQueue_Note_StoredIn_Redis()
         {
-
-            for (int i = 0; i < 10000; i++)
+            //add 5000 bids for "a1"
+            for (int i = 0; i < 5000; i++)
             {
                 //simulating a mapper from entity to event. At the moment is a speculat matching of attributes
                 BidCreationEvent eventMessage = new BidCreationEvent();
@@ -124,7 +124,50 @@ namespace Cube_Auction.API.Controllers
                     throw;
                 }
             }
-            
+
+            //add 2500 bids for "a2"
+            for (int i = 5001; i < 7500; i++)
+            {
+                //simulating a mapper from entity to event. At the moment is a speculat matching of attributes
+                BidCreationEvent eventMessage = new BidCreationEvent();
+                eventMessage.Id = "IdBid=" + i;
+                eventMessage.Amount = 100;
+                eventMessage.DateTime = DateTime.UtcNow;
+                eventMessage.AuctionName = "a2";
+                eventMessage.AuctionSubscriberName = "SubscriberLuca";
+
+                try
+                {
+                    _eventBus.PublishBidCreation(EventBusConstants.BidCreationQueue_Redis, eventMessage); //need to create event object
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "ERROR Publishing event BID CREATION: {RequestId} from {Name}", eventMessage.Id, "Bid");
+                    throw;
+                }
+            }
+
+            //add 500 bids for "a3"
+            for (int i = 7501; i < 8000; i++)
+            {
+                //simulating a mapper from entity to event. At the moment is a speculat matching of attributes
+                BidCreationEvent eventMessage = new BidCreationEvent();
+                eventMessage.Id = "IdBid=" + i;
+                eventMessage.Amount = 100;
+                eventMessage.DateTime = DateTime.UtcNow;
+                eventMessage.AuctionName = "a3";
+                eventMessage.AuctionSubscriberName = "SubscriberLuca";
+
+                try
+                {
+                    _eventBus.PublishBidCreation(EventBusConstants.BidCreationQueue_Redis, eventMessage); //need to create event object
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "ERROR Publishing event BID CREATION: {RequestId} from {Name}", eventMessage.Id, "Bid");
+                    throw;
+                }
+            }
 
             return Ok();
         }
@@ -132,10 +175,10 @@ namespace Cube_Auction.API.Controllers
 
         [HttpPost]
         [ProducesResponseType(typeof(AuctionResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> PostManyBidsToQueue_Note_StoredIn_Mongo()
+        public async Task<IActionResult> MONGO_PostManyBidsToQueue_Note_StoredIn_Mongo()
         {
 
-            for (int i = 0; i < 10000; i++)
+            for (int i = 0; i < 5000; i++)
             {
                 //simulating a mapper from entity to event. At the moment is a speculat matching of attributes
                 BidCreationEvent eventMessage = new BidCreationEvent();
@@ -156,7 +199,47 @@ namespace Cube_Auction.API.Controllers
                 }
             }
 
+            for (int i = 5001; i < 7500; i++)
+            {
+                //simulating a mapper from entity to event. At the moment is a speculat matching of attributes
+                BidCreationEvent eventMessage = new BidCreationEvent();
+                eventMessage.Id = "IdBid=" + i;
+                eventMessage.Amount = 100;
+                eventMessage.DateTime = DateTime.UtcNow;
+                eventMessage.AuctionName = "a2";
+                eventMessage.AuctionSubscriberName = "SubscriberLuca";
 
+                try
+                {
+                    _eventBus.PublishBidCreation(EventBusConstants.BidCreationQueue_Mongo, eventMessage); //need to create event object
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "ERROR Publishing event BID CREATION: {RequestId} from {Name}", eventMessage.Id, "Bid");
+                    throw;
+                }
+            }
+
+            for (int i = 7501; i < 8000; i++)
+            {
+                //simulating a mapper from entity to event. At the moment is a speculat matching of attributes
+                BidCreationEvent eventMessage = new BidCreationEvent();
+                eventMessage.Id = "IdBid=" + i;
+                eventMessage.Amount = 100;
+                eventMessage.DateTime = DateTime.UtcNow;
+                eventMessage.AuctionName = "a3";
+                eventMessage.AuctionSubscriberName = "SubscriberLuca";
+
+                try
+                {
+                    _eventBus.PublishBidCreation(EventBusConstants.BidCreationQueue_Mongo, eventMessage); //need to create event object
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "ERROR Publishing event BID CREATION: {RequestId} from {Name}", eventMessage.Id, "Bid");
+                    throw;
+                }
+            }
             return Ok();
         }
     }

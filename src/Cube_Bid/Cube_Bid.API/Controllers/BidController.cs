@@ -66,6 +66,14 @@ namespace Cube_Bid.API.Controllers
             return Ok(bids);
         }
 
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<Bid>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<IEnumerable<Bid>>> MONGO_GetBidsByAuctionName(string anAuctionName)
+        {
+            var bids = await _bidRepositoryMongo.GetBidsByAuctionName(anAuctionName);
+            return Ok(bids);
+        }
+
 
         [HttpPost]
         [ProducesResponseType(typeof(Bid), (int)HttpStatusCode.Created)]

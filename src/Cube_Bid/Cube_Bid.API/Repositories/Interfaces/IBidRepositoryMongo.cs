@@ -8,8 +8,8 @@ namespace Cube_Bid.API.Repositories.Interfaces
     {
         Task Create(Bid aBid);
         Task<bool> Delete(string id);
-
         Task<bool> DeleteAll();
         Task<IEnumerable<Bid>> GetAllBids();
+        Task<IEnumerable<Bid>> GetBidsByAuctionName(string anInputstring);
     }
 }
