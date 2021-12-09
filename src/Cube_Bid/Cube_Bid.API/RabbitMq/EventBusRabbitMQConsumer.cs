@@ -14,12 +14,12 @@ namespace Cube_Bid.API.RabbitMq
     public class EventBusRabbitMQConsumer
     {
         private readonly IRabbitMQConnection _connection;
-        private readonly IBidReposirory _bidRepository;
+        private readonly IBidRepositoryRedis _bidRepositoryRedis;
 
-        public EventBusRabbitMQConsumer(IRabbitMQConnection connection, IBidReposirory bidRepository)//, IMediator mediator, IMapper mapper, IOrderRepository repository)
+        public EventBusRabbitMQConsumer(IRabbitMQConnection connection, IBidRepositoryRedis bidRepositoryRedis)//, IMediator mediator, IMapper mapper, IOrderRepository repository)
         {
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
-            _bidRepository = bidRepository ?? throw new ArgumentNullException(nameof(_bidRepository));
+            _bidRepositoryRedis = bidRepositoryRedis ?? throw new ArgumentNullException(nameof(_bidRepositoryRedis));
         }
 
         //LD going to consume from "AuctionCreationQueue"
@@ -66,7 +66,7 @@ namespace Cube_Bid.API.RabbitMq
                 var message = Encoding.UTF8.GetString(e.Body.Span);
                 var Event = JsonConvert.DeserializeObject<BidCreationEvent>(message);
 
-                _bidRepository.InsertBid(Event.AuctionName + "-"+ Event.Id, Event.AuctionSubscriberName + "-" + Event.Amount + "-" + Event.DateTime);
+                _bidRepositoryRedis.InsertBid(Event.AuctionName + "-"+ Event.Id, Event.AuctionSubscriberName + "-" + Event.Amount + "-" + Event.DateTime);
             }
 
             if (e.RoutingKey == EventBusConstants.BidCreationQueue_Mongo)
@@ -74,7 +74,7 @@ namespace Cube_Bid.API.RabbitMq
                 var message = Encoding.UTF8.GetString(e.Body.Span);
                 var Event = JsonConvert.DeserializeObject<BidCreationEvent>(message);
 
-                //_bidRepository.InsertBid(Event.AuctionName + "-" + Event.Id, Event.AuctionSubscriberName + "-" + Event.Amount + "-" + Event.DateTime);
+                //_bidRepositoryMongo.(Event.AuctionName + "-" + Event.Id, Event.AuctionSubscriberName + "-" + Event.Amount + "-" + Event.DateTime);
             }
 
         }

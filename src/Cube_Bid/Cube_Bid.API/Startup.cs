@@ -4,12 +4,14 @@ using Cube_Bid.API.Extentions;
 using Cube_Bid.API.RabbitMq;
 using Cube_Bid.API.Repositories;
 using Cube_Bid.API.Repositories.Interfaces;
+using Cube_Bid.API.Settings;
 using EventBusRabbitMQ;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using RabbitMQ.Client;
 using StackExchange.Redis;
@@ -31,13 +33,26 @@ namespace Cube_Bid.API
 
             services.AddControllers();
 
+
+            #region Mongo Dependencies
+
+            services.Configure<BidMongoDatabaseSettings>(Configuration.GetSection(nameof(BidMongoDatabaseSettings)));
+
+            services.AddSingleton<IBidMongoDatabaseSettings>(sp =>
+                sp.GetRequiredService<IOptions<BidMongoDatabaseSettings>>().Value);
+
+            #endregion
+
             #region Project Dependencies
+
             services.AddTransient<IAuctionContext, AuctionContext>();
             services.AddTransient<IAuctionReposirory, AuctionReposirory>();
-            services.AddTransient<IBidContext, BidContextRedis>();
-            services.AddTransient<IBidReposirory, BidReposirory>();
 
-            //services.AddAutoMapper(typeof(Startup));
+            services.AddTransient<IBidContextRedis, BidContextRedis>();
+            services.AddTransient<IBidRepositoryRedis, BidReposiroryRedis>();
+
+            services.AddTransient<IBidContextMongo, BidContextMongo>();
+            services.AddTransient<IBidRepositoryMongo, BidRepositoryMongo>();
 
             #endregion
 

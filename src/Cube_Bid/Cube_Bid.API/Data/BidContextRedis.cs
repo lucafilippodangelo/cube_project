@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace Cube_Bid.API.Data
 {
-    public class BidContextRedis : IBidContext
+    public class BidContextRedis : IBidContextRedis
     {
         private readonly ConnectionMultiplexer _redisConnection;
         private readonly IConfiguration _configuration;
@@ -19,9 +19,8 @@ namespace Cube_Bid.API.Data
             _configuration = configuration;
 
             Redis = redisConnection.GetDatabase();
-            var dd = _configuration.GetConnectionString("Redis");
-            var ff = Redis.Multiplexer.Configuration;
-            
+            var dd = _configuration.GetConnectionString("Redis");//var ff = Redis.Multiplexer.Configuration;
+
             Server = redisConnection.GetServer(dd);
         }
 
