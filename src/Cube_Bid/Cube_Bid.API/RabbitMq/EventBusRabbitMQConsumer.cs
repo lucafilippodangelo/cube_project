@@ -1,4 +1,5 @@
-﻿using Cube_Bid.API.Repositories.Interfaces;
+﻿using Cube_Bid.API.Entities;
+using Cube_Bid.API.Repositories.Interfaces;
 using EventBusRabbitMQ;
 using EventBusRabbitMQ.Common;
 using EventBusRabbitMQ.Events;
@@ -15,11 +16,13 @@ namespace Cube_Bid.API.RabbitMq
     {
         private readonly IRabbitMQConnection _connection;
         private readonly IBidRepositoryRedis _bidRepositoryRedis;
+        private readonly IBidRepositoryMongo _bidRepositoryMongo;
 
-        public EventBusRabbitMQConsumer(IRabbitMQConnection connection, IBidRepositoryRedis bidRepositoryRedis)//, IMediator mediator, IMapper mapper, IOrderRepository repository)
+        public EventBusRabbitMQConsumer(IRabbitMQConnection connection, IBidRepositoryRedis bidRepositoryRedis, IBidRepositoryMongo bidRepositoryMongo)//, IMediator mediator, IMapper mapper, IOrderRepository repository)
         {
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
             _bidRepositoryRedis = bidRepositoryRedis ?? throw new ArgumentNullException(nameof(_bidRepositoryRedis));
+            _bidRepositoryMongo = bidRepositoryMongo ?? throw new ArgumentNullException(nameof(_bidRepositoryMongo));
         }
 
         //LD going to consume from "AuctionCreationQueue"
@@ -74,7 +77,12 @@ namespace Cube_Bid.API.RabbitMq
                 var message = Encoding.UTF8.GetString(e.Body.Span);
                 var Event = JsonConvert.DeserializeObject<BidCreationEvent>(message);
 
-                //_bidRepositoryMongo.(Event.AuctionName + "-" + Event.Id, Event.AuctionSubscriberName + "-" + Event.Amount + "-" + Event.DateTime);
+                Bid aBid = new Bid();
+                aBid.Name = Event.AuctionName + "-" + Event.Id;
+                aBid.Amount = Event.Amount;
+                aBid.DateTime = Event.DateTime;
+
+                await _bidRepositoryMongo.Create(aBid);
             }
 
         }
