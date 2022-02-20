@@ -27,6 +27,8 @@ namespace Cube_Bid.API.Controllers
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
 
+        #region redis
+        /*
         [HttpGet]
         [ProducesResponseType(typeof(List<string>), (int)HttpStatusCode.OK)]
         public List<string> REDIS_TestAuctionInsert_ByAPI()
@@ -55,9 +57,10 @@ namespace Cube_Bid.API.Controllers
         {
             return _bidRepositoryRedis.InsertBid(key,value);
         }
+        */
+        #endregion redis
 
-        
-        
+
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Bid>), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<IEnumerable<Bid>>> MONGO_GetAllBids()

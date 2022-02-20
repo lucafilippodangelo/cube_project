@@ -22,10 +22,18 @@ namespace EventBusRabbitMQ.Producer
         {
             using (var channel = _connection.CreateModel())
             {
-                channel.QueueDeclare(queue: queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+                channel.QueueDeclare(queue: queueName, 
+                                     durable: false, 
+                                     exclusive: false, 
+                                     autoDelete: false, 
+                                     arguments: null);
 
                 //LD second queue
-                channel.QueueDeclare(queue: EventBusConstants.SecondConsumerQueue, durable: false, exclusive: false, autoDelete: false, arguments: null);
+                channel.QueueDeclare(queue: EventBusConstants.SecondConsumerQueue, 
+                                     durable: false, 
+                                     exclusive: false, 
+                                     autoDelete: false, 
+                                     arguments: null);
 
                 var message = JsonConvert.SerializeObject(publishModel);
                 var body = Encoding.UTF8.GetBytes(message);
@@ -35,11 +43,19 @@ namespace EventBusRabbitMQ.Producer
                 properties.DeliveryMode = 2;
 
                 channel.ConfirmSelect();
-                channel.BasicPublish(exchange: "", routingKey: queueName, mandatory: true, basicProperties: properties, body: body);
+                channel.BasicPublish(exchange: "", 
+                                     routingKey: queueName, 
+                                     mandatory: true, 
+                                     basicProperties: properties, 
+                                     body: body);
 
 
                 //LD publish second queue
-                channel.BasicPublish(exchange: "", routingKey: EventBusConstants.SecondConsumerQueue, mandatory: true, basicProperties: properties, body: body);
+                channel.BasicPublish(exchange: "", 
+                                     routingKey: EventBusConstants.SecondConsumerQueue, 
+                                     mandatory: true, 
+                                     basicProperties: 
+                                     properties, body: body);
 
                 channel.WaitForConfirmsOrDie();
 

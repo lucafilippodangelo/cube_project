@@ -28,13 +28,6 @@ namespace Cube_Bid.API.RabbitMq
         //LD going to consume from "AuctionCreationQueue"
         public void Consume()
         {
-            //LD consuming the queue "AuctionCreationQueue" ------------------------------------
-            var channel = _connection.CreateModel();
-            channel.QueueDeclare(queue: EventBusConstants.AuctionCreationQueue, durable: false, exclusive: false, autoDelete: false, arguments: null);
-            var consumer = new EventingBasicConsumer(channel);
-            //Create event when something receive
-            consumer.Received += ReceivedEvent;
-            channel.BasicConsume(queue: EventBusConstants.AuctionCreationQueue, autoAck:true, consumer: consumer);
 
             //LD consuming the queue "AuctionCreationQueue" ------------------------------------
             var channelTwo = _connection.CreateModel();
@@ -58,12 +51,6 @@ namespace Cube_Bid.API.RabbitMq
         //ORDERS APPLICATION
         private async void ReceivedEvent(object sender, BasicDeliverEventArgs e)
         {
-            if (e.RoutingKey == EventBusConstants.AuctionCreationQueue)
-            {
-                var message = Encoding.UTF8.GetString(e.Body.Span);
-                var Event = JsonConvert.DeserializeObject<AuctionCreationEvent>(message);
-            }
-
             if (e.RoutingKey == EventBusConstants.BidCreationQueue_Redis)
             {
                 var message = Encoding.UTF8.GetString(e.Body.Span);

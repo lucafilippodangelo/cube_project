@@ -67,7 +67,7 @@ services:
         environment:
             - ASPNETCORE_ENVIRONMENT=Development
             - "ConnectionStrings:Redis=db_redis:6379"
-            - "CatalogDatabaseSettings:ConnectionString=mongodb://db_mongo:27017"
+            - "BidMongoDatabaseSettings:ConnectionString=mongodb://mongo:27017"
             - "EventBus:HostName=rabbitmq"
         depends_on:
             - db_mongo
