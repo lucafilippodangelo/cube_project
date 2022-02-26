@@ -7,9 +7,8 @@ namespace Cube_Auction.Core.Entities
 {
     public class Auction : Entity
     {
+        public Guid Id { get; set; }  
         public string Name { get; set; }
-
-        public DateTime ExpirationDateTime { get; set; }  //DeliveryStandByDuration is this + 3h
 
     }
 }

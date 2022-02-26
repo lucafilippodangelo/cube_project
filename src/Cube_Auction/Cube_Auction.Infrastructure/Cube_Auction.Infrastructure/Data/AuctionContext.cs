@@ -10,7 +10,7 @@ namespace Cube_Auction.Infrastructure.Data
         }
 
         public DbSet<Auction> Auctions { get; set; }
-        public DbSet<AuctionStatusHistory> AuctionStatusHistory { get; set; }
+        public DbSet<AuctionHistory> AuctionHistory { get; set; }
     }
 
    

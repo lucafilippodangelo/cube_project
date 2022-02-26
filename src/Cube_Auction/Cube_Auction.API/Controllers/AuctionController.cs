@@ -45,13 +45,22 @@ namespace Cube_Auction.API.Controllers
         }
 
        
-        
+        /// <summary>
+        /// I use this endpoint to create an auction with relate default history (creation and expire time)
+        /// </summary>
+        /// <param name="command"></param>
+        /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(typeof(AuctionResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> MSSQL_AuctionCreation([FromBody] AuctionCommand command)
         {
             //LD when creating an auction we do create the auction itseld and the history records(one for create and one for finalise)
             var result = await _repository.PostAuction(command);
+
+            AuctionHistoryCommand anAuctionHistoryCommand = new AuctionHistoryCommand() {  AuctionId = result.Id, AuctionStatus =  AuctionStatus.Created  };
+
+            //LD post history, this should be done in transaction
+            result = await _repository.PostAuctionHistory(anAuctionHistoryCommand);
 
             return Ok(result);
         }
@@ -163,6 +172,10 @@ namespace Cube_Auction.API.Controllers
         #endregion
 
 
+        /// <summary>
+        /// This method is used as a test
+        /// </summary>
+        /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(typeof(AuctionResponse), (int)HttpStatusCode.OK)]
         public async Task<IActionResult> MONGO_Post5000BidsToQueue_ThoseBidsWillBeStoredInMongo()

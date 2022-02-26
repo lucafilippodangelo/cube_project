@@ -12,5 +12,6 @@ namespace Cube_Auction.Core.Repositories
         Task<IEnumerable<Auction>> GetAuctions();
         Task<IEnumerable<Auction>> GetAuctionByName(string name);
         Task<Auction> PostAuction(AuctionCommand command);
+        Task<Auction> PostAuctionHistory(AuctionHistoryCommand command);
     }
 }

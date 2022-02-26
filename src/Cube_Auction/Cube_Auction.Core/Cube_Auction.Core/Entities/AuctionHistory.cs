@@ -5,14 +5,12 @@ using System.Text;
 
 namespace Cube_Auction.Core.Entities
 {
-    public class AuctionStatusHistory : Entity
+    public class AuctionHistory : Entity
     {
-        
-        public Auction Auction { get; set; } //many history associated with one Auction
-        public DateTime DateTimeEvent { get; set; }
+        public Guid Id { get; set; }
+        public Guid AuctionId { get; set; }
         public AuctionStatus AuctionStatus { get; set; }
-
-
+        public DateTime DateTimeEvent { get; set; }
     }
 
     public enum AuctionStatus

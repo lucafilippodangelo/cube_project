@@ -11,16 +11,16 @@ using System.Threading.Tasks;
 
 namespace Cube_Auction.Infrastructure.Repository
 {
-    public class AuctionStatusHistoryRepository : Repository<AuctionStatusHistory>, IAuctionStatusHistoryRepository
+    public class AuctionStatusHistoryRepository : Repository<AuctionHistory>, IAuctionHistoryRepository
     {
         public AuctionStatusHistoryRepository(AuctionContext dbContext) : base(dbContext)
         {
         }
 
-        public async Task<IEnumerable<AuctionStatusHistory>> GetAuctionHistory(Auction anAuction)
+        public async Task<IEnumerable<AuctionHistory>> GetAuctionHistory(Auction anAuction)
         {
-            var auctionHistoryList = await _dbContext.AuctionStatusHistory
-                      .Where(o => o.Auction.Name == anAuction.Name)
+            var auctionHistoryList = await _dbContext.AuctionHistory
+                      .Where(o => o.AuctionId == anAuction.Id)
                       .ToListAsync();
 
             return auctionHistoryList;

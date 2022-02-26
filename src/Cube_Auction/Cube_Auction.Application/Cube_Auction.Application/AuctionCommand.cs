@@ -7,6 +7,7 @@ namespace Cube_Auction.Application
 {
     public class AuctionCommand : IRequest<AuctionResponse>
     {
+        public Guid Id { get; set; }    
         public string Name { get; set; }
         //public DateTime ExpirationDateTime { get; set; }  
     }

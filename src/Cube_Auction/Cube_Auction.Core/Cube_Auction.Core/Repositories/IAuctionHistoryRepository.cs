@@ -5,9 +5,9 @@ using System.Threading.Tasks;
 
 namespace Cube_Auction.Core.Repositories
 {
-    public interface IAuctionStatusHistoryRepository : IRepository<AuctionStatusHistory>
+    public interface IAuctionHistoryRepository : IRepository<AuctionHistory>
     {
-        Task<IEnumerable<AuctionStatusHistory>> GetAuctionHistory(Auction anAuction);
+        Task<IEnumerable<AuctionHistory>> GetAuctionHistory(Auction anAuction);
     }
 }
 

@@ -39,8 +39,8 @@ namespace Cube_Auction.Infrastructure.Repository
         {
             //LD simulating a mapper at the moment
             Auction aNewAuction = new Auction();
+            aNewAuction.Id = Guid.NewGuid();
             aNewAuction.Name = command.Name;
-            aNewAuction.ExpirationDateTime = DateTime.UtcNow;
 
             _ = _dbContext.Auctions.AddAsync(aNewAuction);
             _ = await _dbContext.SaveChangesAsync();
@@ -48,5 +48,23 @@ namespace Cube_Auction.Infrastructure.Repository
             return aNewAuction;
         }
 
+        public async Task<AuctionHistory> PostAuctionHistory(AuctionHistoryCommand command)
+        {
+            //LD simulating a mapper at the moment
+            AuctionHistory aNewAuctionHistory = new AuctionHistory();
+            aNewAuctionHistory.Id = Guid.NewGuid();
+            aNewAuctionHistory.AuctionId = command.AuctionId;
+            aNewAuctionHistory.DateTimeEvent = command.DateTimeEvent;//at the moment passing it from the controller, there will be a builder or something
+            aNewAuctionHistory.AuctionStatus = (Core.Entities.AuctionStatus)command.AuctionStatus;
+            _ = _dbContext.AuctionHistory.AddAsync(aNewAuctionHistory);
+            _ = await _dbContext.SaveChangesAsync();
+
+            return aNewAuctionHistory;
+        }
+
+        Task<Auction> IAuctionRepository.PostAuctionHistory(AuctionHistoryCommand command)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
