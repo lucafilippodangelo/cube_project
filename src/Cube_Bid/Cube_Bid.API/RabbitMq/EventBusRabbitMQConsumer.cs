@@ -56,6 +56,8 @@ namespace Cube_Bid.API.RabbitMq
                 var message = Encoding.UTF8.GetString(e.Body.Span);
                 var Event = JsonConvert.DeserializeObject<AuctionEvent>(message);
 
+                //I have to store the event in a table storing all the auctions
+
                 //_bidRepositoryRedis.InsertBid(Event.AuctionName + "-"+ Event.Id, Event.AuctionSubscriberName + "-" + Event.Amount + "-" + Event.DateTime);
             }
 
@@ -65,9 +67,10 @@ namespace Cube_Bid.API.RabbitMq
                 var Event = JsonConvert.DeserializeObject<BidCreationEvent>(message);
 
                 Bid aBid = new Bid();
-                aBid.BidName = "Event Id: "+Event.Id;
-                aBid.AuctionName = Event.AuctionName;
+                aBid.BidName = "Created By Routine";
+                aBid.AuctionId = Event.AuctionId;
                 aBid.Amount = Event.Amount;
+                aBid.confirmed = 0; //LD by default is in "Pending status"
                 aBid.DateTime = Event.DateTime;
 
                 await _bidRepositoryMongo.Create(aBid);

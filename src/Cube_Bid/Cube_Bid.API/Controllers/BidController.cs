@@ -71,9 +71,9 @@ namespace Cube_Bid.API.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Bid>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IEnumerable<Bid>>> MONGO_GetBidsByAuctionName(string anAuctionName)
+        public async Task<ActionResult<IEnumerable<Bid>>> MONGO_GetBidsByAuctionId(Guid anAuctionId)
         {
-            var bids = await _bidRepositoryMongo.GetBidsByAuctionName(anAuctionName);
+            var bids = await _bidRepositoryMongo.GetBidsByAuctionId(anAuctionId);
             return Ok(bids);
         }
 
@@ -91,7 +91,7 @@ namespace Cube_Bid.API.Controllers
 
         [HttpDelete("{id:length(24)}")]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> MONGO_DeleteBidById(string id)
+        public async Task<IActionResult> MONGO_DeleteBidById(Guid id)
         {
             return Ok(await _bidRepositoryMongo.Delete(id));
         }

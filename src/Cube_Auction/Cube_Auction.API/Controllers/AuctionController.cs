@@ -222,7 +222,7 @@ namespace Cube_Auction.API.Controllers
         public async Task<IActionResult> MONGO_Post5000BidsToQueue_ThoseBidsWillBeStoredInMongo(Guid auctionId)
         {
             //5000 "a1"
-            for (int i = 0; i < 5000; i++)
+            for (int i = 0; i < 50; i++)
             {
                 //simulating a mapper from entity to event. At the moment is a speculat matching of attributes
                 BidCreationEvent eventMessage = new BidCreationEvent();

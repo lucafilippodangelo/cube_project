@@ -5,6 +5,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Cube_Bid.API.Repositories
@@ -22,15 +23,17 @@ namespace Cube_Bid.API.Repositories
 
         public async Task<IEnumerable<Bid>> GetAllBids()
         {
-            return await _context
+            var toBeReturned = await _context
                             .Bids
                             .Find(p => true)
                             .ToListAsync();
+
+            return toBeReturned.OrderBy(d=>d.DateTime);
         }
 
-        public async Task<IEnumerable<Bid>> GetBidsByAuctionName(string anInputString)
+        public async Task<IEnumerable<Bid>> GetBidsByAuctionId(Guid aGuid)
         {
-            FilterDefinition<Bid> filter = Builders<Bid>.Filter.Eq(p => p.AuctionName, anInputString);
+            FilterDefinition<Bid> filter = Builders<Bid>.Filter.Eq(p => p.AuctionId, aGuid);
 
 
 
@@ -44,7 +47,7 @@ namespace Cube_Bid.API.Repositories
         {
             try
             {
-                aBid .Id = MongoDB.Bson.ObjectId.GenerateNewId().ToString();
+                aBid.Id = Guid.NewGuid(); //MongoDB.Bson.ObjectId.GenerateNewId();
                 await _context.Bids.InsertOneAsync(aBid);
 
             }
@@ -56,7 +59,7 @@ namespace Cube_Bid.API.Repositories
 
         }
 
-        public async Task<bool> Delete(string id)
+        public async Task<bool> Delete(Guid id)
         {
             FilterDefinition<Bid> filter = Builders<Bid>.Filter.Eq(m => m.Id, id);
             DeleteResult deleteResult = await _context
@@ -77,6 +80,8 @@ namespace Cube_Bid.API.Repositories
             return deleteResult.IsAcknowledged
                 && deleteResult.DeletedCount > 0;
         }
+
+
 
         /*
 

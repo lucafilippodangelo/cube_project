@@ -13,10 +13,11 @@ namespace Cube_Bid.API.Entities
         public string BidName { get; set; }
 
         //[BsonId]
-        [BsonRepresentation(BsonType.ObjectId)]
-        public string Id { get; set; }        
-        public string AuctionName { get; set; }
+        //[BsonRepresentation(BsonType.ObjectId)]
+        public Guid Id { get; set; }        
+        public Guid AuctionId { get; set; }
         public double Amount { get; set; }  
+        public int confirmed { get; set; } //LD this is "0" at creation time, a routine will confirm if valid "1" or not valid "2"  
         public DateTime DateTime { get; set; } 
     }
 }
