@@ -56,9 +56,9 @@ namespace Cube_Auction.Infrastructure.Data
         {
             return new List<Auction>()
             {
-                new Auction() { Name = "Auction_001",  ExpirationDateTime = DateTime.UtcNow.AddSeconds(30) },
-                new Auction() { Name = "Auction_002",  ExpirationDateTime = DateTime.UtcNow.AddMinutes(1) },
-                new Auction() { Name = "Auction_003",  ExpirationDateTime = DateTime.UtcNow.AddMinutes(2) }
+                new Auction() { Name = "Auction_001"},
+                new Auction() { Name = "Auction_002" },
+                new Auction() { Name = "Auction_003" }
             };
         }
     }

@@ -21,13 +21,9 @@ namespace Cube_Auction.Infrastructure.Migrations
 
             modelBuilder.Entity("Cube_Auction.Core.Entities.Auction", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<DateTime>("ExpirationDateTime")
-                        .HasColumnType("datetime2");
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("Name")
                         .HasColumnType("nvarchar(max)");
@@ -37,15 +33,14 @@ namespace Cube_Auction.Infrastructure.Migrations
                     b.ToTable("Auctions");
                 });
 
-            modelBuilder.Entity("Cube_Auction.Core.Entities.AuctionStatusHistory", b =>
+            modelBuilder.Entity("Cube_Auction.Core.Entities.AuctionHistory", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("uniqueidentifier");
 
-                    b.Property<int?>("AuctionId")
-                        .HasColumnType("int");
+                    b.Property<Guid>("AuctionId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int>("AuctionStatus")
                         .HasColumnType("int");
@@ -55,18 +50,7 @@ namespace Cube_Auction.Infrastructure.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AuctionId");
-
-                    b.ToTable("AuctionStatusHistory");
-                });
-
-            modelBuilder.Entity("Cube_Auction.Core.Entities.AuctionStatusHistory", b =>
-                {
-                    b.HasOne("Cube_Auction.Core.Entities.Auction", "Auction")
-                        .WithMany()
-                        .HasForeignKey("AuctionId");
-
-                    b.Navigation("Auction");
+                    b.ToTable("AuctionHistory");
                 });
 #pragma warning restore 612, 618
         }

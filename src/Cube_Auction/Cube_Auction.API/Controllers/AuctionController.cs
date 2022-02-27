@@ -57,10 +57,25 @@ namespace Cube_Auction.API.Controllers
             //LD when creating an auction we do create the auction itseld and the history records(one for create and one for finalise)
             var result = await _repository.PostAuction(command);
 
-            AuctionHistoryCommand anAuctionHistoryCommand = new AuctionHistoryCommand() {  AuctionId = result.Id, AuctionStatus =  AuctionStatus.Created  };
+
+            //LD post creation event
+            AuctionHistoryCommand anAuctionHistoryCommand = new AuctionHistoryCommand() 
+            {  AuctionId = result.Id, 
+               AuctionStatus =  AuctionStatus.Created, 
+               DateTimeEvent =  DateTime.UtcNow };
+            await _repository.PostAuctionHistory(anAuctionHistoryCommand);
+
+
+            //LD post default expire time event. Will default to 5 seconds
+            AuctionHistoryCommand anAuctionHistoryCommandTwo = new AuctionHistoryCommand()
+            {   AuctionId = result.Id,
+                AuctionStatus = AuctionStatus.Finalised,
+                DateTimeEvent = anAuctionHistoryCommand.DateTimeEvent.AddSeconds(30),
+            };
 
             //LD post history, this should be done in transaction
-            result = await _repository.PostAuctionHistory(anAuctionHistoryCommand);
+            await _repository.PostAuctionHistory(anAuctionHistoryCommandTwo);
+
 
             return Ok(result);
         }
@@ -173,7 +188,7 @@ namespace Cube_Auction.API.Controllers
 
 
         /// <summary>
-        /// This method is used as a test
+        /// This method create a lot of bids, is used as a test
         /// </summary>
         /// <returns></returns>
         [HttpPost]

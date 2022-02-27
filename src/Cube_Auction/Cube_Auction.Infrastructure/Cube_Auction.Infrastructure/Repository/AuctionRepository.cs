@@ -62,9 +62,5 @@ namespace Cube_Auction.Infrastructure.Repository
             return aNewAuctionHistory;
         }
 
-        Task<Auction> IAuctionRepository.PostAuctionHistory(AuctionHistoryCommand command)
-        {
-            throw new NotImplementedException();
-        }
     }
 }
