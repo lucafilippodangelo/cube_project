@@ -25,19 +25,19 @@ namespace Cube_Bid.API.RabbitMq
             _bidRepositoryMongo = bidRepositoryMongo ?? throw new ArgumentNullException(nameof(_bidRepositoryMongo));
         }
 
-        //LD going to consume from "AuctionCreationQueue"
+
         public void Consume()
         {
 
-            //LD consuming the queue "AuctionCreationQueue" ------------------------------------
+            //LD consuming the queue "AuctionEventQueue" ------------------------------------
             var channelTwo = _connection.CreateModel();
-            channelTwo.QueueDeclare(queue: EventBusConstants.BidCreationQueue_Redis, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            channelTwo.QueueDeclare(queue: EventBusConstants.AuctionEventQueue, durable: false, exclusive: false, autoDelete: false, arguments: null);
             var consumerTwo = new EventingBasicConsumer(channelTwo);
             //Create event when something receive
             consumerTwo.Received += ReceivedEvent;
-            channelTwo.BasicConsume(queue: EventBusConstants.BidCreationQueue_Redis, autoAck: true, consumer: consumerTwo);
+            channelTwo.BasicConsume(queue: EventBusConstants.AuctionEventQueue, autoAck: true, consumer: consumerTwo);
 
-            //LD consuming the queue "AuctionCreationQueue" ------------------------------------
+            //LD consuming the queue "BidCreationQueue" ------------------------------------
             var channelThree = _connection.CreateModel();
             channelThree.QueueDeclare(queue: EventBusConstants.BidCreationQueue_Mongo, durable: false, exclusive: false, autoDelete: false, arguments: null);
             var consumerThree = new EventingBasicConsumer(channelThree);
@@ -51,12 +51,12 @@ namespace Cube_Bid.API.RabbitMq
         //ORDERS APPLICATION
         private async void ReceivedEvent(object sender, BasicDeliverEventArgs e)
         {
-            if (e.RoutingKey == EventBusConstants.BidCreationQueue_Redis)
+            if (e.RoutingKey == EventBusConstants.AuctionEventQueue)
             {
                 var message = Encoding.UTF8.GetString(e.Body.Span);
-                var Event = JsonConvert.DeserializeObject<BidCreationEvent>(message);
+                var Event = JsonConvert.DeserializeObject<AuctionEvent>(message);
 
-                _bidRepositoryRedis.InsertBid(Event.AuctionName + "-"+ Event.Id, Event.AuctionSubscriberName + "-" + Event.Amount + "-" + Event.DateTime);
+                //_bidRepositoryRedis.InsertBid(Event.AuctionName + "-"+ Event.Id, Event.AuctionSubscriberName + "-" + Event.Amount + "-" + Event.DateTime);
             }
 
             if (e.RoutingKey == EventBusConstants.BidCreationQueue_Mongo)

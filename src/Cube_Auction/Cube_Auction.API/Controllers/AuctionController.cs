@@ -47,6 +47,7 @@ namespace Cube_Auction.API.Controllers
        
         /// <summary>
         /// I use this endpoint to create an auction with relate default history (creation and expire time)
+        /// And send the events to a queue Bid service will listen
         /// </summary>
         /// <param name="command"></param>
         /// <returns></returns>
@@ -64,17 +65,42 @@ namespace Cube_Auction.API.Controllers
                AuctionStatus =  AuctionStatus.Created, 
                DateTimeEvent =  DateTime.UtcNow };
             await _repository.PostAuctionHistory(anAuctionHistoryCommand);
+            
 
-
-            //LD post default expire time event. Will default to 5 seconds
+            //LD post default expire time event. Will default to 30 seconds
             AuctionHistoryCommand anAuctionHistoryCommandTwo = new AuctionHistoryCommand()
             {   AuctionId = result.Id,
                 AuctionStatus = AuctionStatus.Finalised,
                 DateTimeEvent = anAuctionHistoryCommand.DateTimeEvent.AddSeconds(30),
             };
-
-            //LD post history, this should be done in transaction
             await _repository.PostAuctionHistory(anAuctionHistoryCommandTwo);
+
+
+
+            //LD posting messages in queues
+            try
+            {
+                //simulating a mapper from entity to event. At the moment is a speculat matching of attributes
+                AuctionEvent auctionEventMessage = new AuctionEvent();
+                auctionEventMessage.Id = result.Id;
+                auctionEventMessage.EventCode = (int)anAuctionHistoryCommand.AuctionStatus;
+                auctionEventMessage.EventDateTime = anAuctionHistoryCommand.DateTimeEvent;
+                _eventBus.PublishAuctionEvent(EventBusConstants.AuctionEventQueue, auctionEventMessage); 
+
+
+                //simulating a mapper from entity to event. At the moment is a speculat matching of attributes
+                AuctionEvent auctionEventMessageTwo = new AuctionEvent();
+                auctionEventMessageTwo.Id = result.Id;
+                auctionEventMessageTwo.EventCode = (int)anAuctionHistoryCommandTwo.AuctionStatus;
+                auctionEventMessageTwo.EventDateTime = anAuctionHistoryCommandTwo.DateTimeEvent;
+                _eventBus.PublishAuctionEvent(EventBusConstants.AuctionEventQueue, auctionEventMessageTwo); 
+
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "ERROR Publishing AUCTION EVENT");
+                throw;
+            }
 
 
             return Ok(result);

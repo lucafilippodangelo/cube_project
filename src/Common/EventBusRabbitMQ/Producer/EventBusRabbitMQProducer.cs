@@ -74,7 +74,7 @@ namespace EventBusRabbitMQ.Producer
             PublishCreation(queueName, publishModel);
         }
 
-        public void PublishAuctionCreation(string queueName, AuctionCreationEvent publishModel)
+        public void PublishAuctionEvent(string queueName, AuctionEvent publishModel)
         {
             PublishCreation(queueName, publishModel);
         }
