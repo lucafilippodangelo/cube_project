@@ -45,6 +45,8 @@ namespace Cube_Bid.API
 
             #region Project Dependencies
 
+            services.AddTransient<IBidValidator, BidValidator>();
+
             services.AddTransient<IAuctionContext, AuctionContext>();
             services.AddTransient<IAuctionReposirory, AuctionReposirory>();
 

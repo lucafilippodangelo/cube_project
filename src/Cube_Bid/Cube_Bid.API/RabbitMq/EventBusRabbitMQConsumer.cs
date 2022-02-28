@@ -9,6 +9,8 @@ using RabbitMQ.Client.Events;
 using System;
 using System.IO;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Cube_Bid.API.RabbitMq
 {
@@ -17,12 +19,14 @@ namespace Cube_Bid.API.RabbitMq
         private readonly IRabbitMQConnection _connection;
         private readonly IBidRepositoryRedis _bidRepositoryRedis;
         private readonly IBidRepositoryMongo _bidRepositoryMongo;
+        private readonly IBidValidator _bidValidator;
 
-        public EventBusRabbitMQConsumer(IRabbitMQConnection connection, IBidRepositoryRedis bidRepositoryRedis, IBidRepositoryMongo bidRepositoryMongo)//, IMediator mediator, IMapper mapper, IOrderRepository repository)
+        public EventBusRabbitMQConsumer(IRabbitMQConnection connection, IBidRepositoryRedis bidRepositoryRedis, IBidRepositoryMongo bidRepositoryMongo, IBidValidator bidValidator)//, IMediator mediator, IMapper mapper, IOrderRepository repository)
         {
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
             _bidRepositoryRedis = bidRepositoryRedis ?? throw new ArgumentNullException(nameof(_bidRepositoryRedis));
             _bidRepositoryMongo = bidRepositoryMongo ?? throw new ArgumentNullException(nameof(_bidRepositoryMongo));
+            _bidValidator = bidValidator ?? throw new ArgumentNullException(nameof(_bidValidator));
         }
 
 
@@ -61,19 +65,33 @@ namespace Cube_Bid.API.RabbitMq
                 //_bidRepositoryRedis.InsertBid(Event.AuctionName + "-"+ Event.Id, Event.AuctionSubscriberName + "-" + Event.Amount + "-" + Event.DateTime);
             }
 
+
+            
             if (e.RoutingKey == EventBusConstants.BidCreationQueue_Mongo)
             {
+
+                //LD STEP ONE -> store bid in mongo
                 var message = Encoding.UTF8.GetString(e.Body.Span);
                 var Event = JsonConvert.DeserializeObject<BidCreationEvent>(message);
 
                 Bid aBid = new Bid();
-                aBid.BidName = "Created By Routine";
+                aBid.BidName = ("Created By Routine with thread: " + Thread.CurrentThread.ManagedThreadId.ToString());
                 aBid.AuctionId = Event.AuctionId;
                 aBid.Amount = Event.Amount;
                 aBid.confirmed = 0; //LD by default is in "Pending status"
                 aBid.DateTime = Event.DateTime;
 
                 await _bidRepositoryMongo.Create(aBid);
+
+                //LD STEP TWO -> validate bid already stored in mongo (parallel thread)
+                var t = Task.Run(() => {
+                    var validationResponse = _bidValidator.ValidateInputBid(aBid);
+                    aBid.confirmed = validationResponse;
+                    aBid.BidName = aBid.BidName + (" - Updated By thread: " + Thread.CurrentThread.ManagedThreadId.ToString());
+                    _bidRepositoryMongo.Update(aBid);
+                });
+
+
             }
 
         }

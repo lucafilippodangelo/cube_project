@@ -55,8 +55,16 @@ namespace Cube_Bid.API.Repositories
             {
                 var info = message;
             }
-            
+        }
 
+        public async Task<bool> Update(Bid aBid)
+        {
+            var updateResult = await _context
+                                        .Bids
+                                        .ReplaceOneAsync(filter: g => g.Id == aBid.Id, replacement: aBid);
+
+            return updateResult.IsAcknowledged
+                    && updateResult.ModifiedCount > 0;
         }
 
         public async Task<bool> Delete(Guid id)

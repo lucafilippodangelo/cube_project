@@ -12,5 +12,6 @@ namespace Cube_Bid.API.Repositories.Interfaces
         Task<bool> DeleteAll();
         Task<IEnumerable<Bid>> GetAllBids();
         Task<IEnumerable<Bid>> GetBidsByAuctionId(Guid aGuid);
+        Task<bool> Update(Bid aBid);
     }
 }
