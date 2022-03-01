@@ -30,15 +30,24 @@ namespace Cube_Auction.API.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<AuctionResponse>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IEnumerable<AuctionResponse>>> MSSQL_AuctionsGet()
+        public async Task<ActionResult<IEnumerable<AuctionResponse>>> MSSQL_GetAuctions()
         {
             var auctions = await _repository.GetAuctions();
             return Ok(auctions);
         }
 
+        //LD note I'm not returning a response but the entity itself to go quick
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<AuctionResponse>), (int)HttpStatusCode.OK)]
-        public async Task<ActionResult<IEnumerable<AuctionResponse>>> MSSQL_AuctionsAndHistoryGetByName(string name)
+        public async Task<ActionResult<IEnumerable<AuctionResponse>>> MSSQL_GetAuctionsHistory()
+        {
+            var auctions = await _repository.GetAuctionsHistory();
+            return Ok(auctions);
+        }
+
+        [HttpGet]
+        [ProducesResponseType(typeof(IEnumerable<AuctionResponse>), (int)HttpStatusCode.OK)]
+        public async Task<ActionResult<IEnumerable<AuctionResponse>>> MSSQL_GetAuctionsAndHistoryByName(string name)
         {
             var auctions = await _repository.GetAuctionByName(name);
             return Ok(auctions);

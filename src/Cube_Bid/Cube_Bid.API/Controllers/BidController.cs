@@ -30,7 +30,7 @@ namespace Cube_Bid.API.Controllers
         }
 
         #region redis
-        /*
+        /* */
         [HttpGet]
         [ProducesResponseType(typeof(List<string>), (int)HttpStatusCode.OK)]
         public List<string> REDIS_TestAuctionInsert_ByAPI()
@@ -40,7 +40,7 @@ namespace Cube_Bid.API.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(void), (int)HttpStatusCode.OK)]
-        public void REDIS_TestAuctionFlushAllDbAStar(string userName)
+        public void REDIS_FlushDb(string userName)
         {
             _repository.AuctionFlushTest();
         }
@@ -59,7 +59,7 @@ namespace Cube_Bid.API.Controllers
         {
             return _bidRepositoryRedis.InsertBid(key,value);
         }
-        */
+       
         #endregion redis
 
 

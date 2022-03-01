@@ -10,6 +10,7 @@ namespace Cube_Auction.Core.Repositories
     public interface IAuctionRepository : IRepository<Auction>
     {
         Task<IEnumerable<Auction>> GetAuctions();
+        Task<IEnumerable<AuctionHistory>> GetAuctionsHistory();
         Task<IEnumerable<Auction>> GetAuctionByName(string name);
         Task<Auction> PostAuction(AuctionCommand command);
         Task<AuctionHistory> PostAuctionHistory(AuctionHistoryCommand command);
