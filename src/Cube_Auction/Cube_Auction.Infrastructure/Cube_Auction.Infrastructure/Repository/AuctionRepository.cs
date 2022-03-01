@@ -46,7 +46,7 @@ namespace Cube_Auction.Infrastructure.Repository
         {
             //LD simulating a mapper at the moment
             Auction aNewAuction = new Auction();
-            aNewAuction.Id = Guid.NewGuid();
+            aNewAuction.Id = command.Id;
             aNewAuction.Name = command.Name;
 
             _ = _dbContext.Auctions.AddAsync(aNewAuction);

@@ -62,7 +62,7 @@ namespace Cube_Auction.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(typeof(AuctionResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> MSSQL_AuctionCreation([FromBody] AuctionCommand command)
+        public async Task<IActionResult> MSSQL_CreateAuction([FromBody] AuctionCommand command)
         {
             //LD when creating an auction we do create the auction itseld and the history records(one for create and one for finalise)
             var result = await _repository.PostAuction(command);

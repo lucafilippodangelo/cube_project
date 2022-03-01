@@ -15,16 +15,16 @@ namespace Cube_Bid.API.Controllers
     public class BidController : ControllerBase
     {
         private readonly IAuctionReposirory _repository;
-        private readonly IBidRepositoryRedis _bidRepositoryRedis;
+        private readonly IAuctionsHistoryRepositoryRedis _auctionHistoryRepositoryRedis;
         private readonly IBidRepositoryMongo _bidRepositoryMongo;
         private readonly ILogger<BidController> _logger;
 
 
 
-        public BidController(IAuctionReposirory repository, IBidRepositoryRedis bidRepositoryRedis, IBidRepositoryMongo bidRepositoryMongo, ILogger<BidController> logger)
+        public BidController(IAuctionReposirory repository, IAuctionsHistoryRepositoryRedis auctionHistoryRepositoryRedis, IBidRepositoryMongo bidRepositoryMongo, ILogger<BidController> logger)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));
-            _bidRepositoryRedis = bidRepositoryRedis ?? throw new ArgumentNullException(nameof(_bidRepositoryRedis));
+            _auctionHistoryRepositoryRedis = auctionHistoryRepositoryRedis ?? throw new ArgumentNullException(nameof(_auctionHistoryRepositoryRedis));
             _bidRepositoryMongo = bidRepositoryMongo ?? throw new ArgumentNullException(nameof(_bidRepositoryMongo));
             _logger = logger ?? throw new ArgumentNullException(nameof(logger));
         }
@@ -50,19 +50,20 @@ namespace Cube_Bid.API.Controllers
         [ProducesResponseType(typeof(List<string>), (int)HttpStatusCode.OK)]
         public List<string> REDIS_GetByPrefixPattern(string pattern)
         {
-            return _bidRepositoryRedis.GetBidsByPattern(pattern);
+            return _auctionHistoryRepositoryRedis.GetAuctionsHistoriesBYAuctionId(pattern);
         }
 
+        /*
         [HttpPost]
         [ProducesResponseType(typeof(string), (int)HttpStatusCode.OK)]
         public string REDIS_CreateBid_ByAPI(string key, string value)
         {
             return _bidRepositoryRedis.InsertBid(key,value);
         }
-       
+        */
         #endregion redis
 
-
+        #region mongo
         [HttpGet]
         [ProducesResponseType(typeof(IEnumerable<Bid>), (int)HttpStatusCode.OK)]
         public async Task<ActionResult<IEnumerable<Bid>>> MONGO_GetAllBids()
@@ -105,6 +106,7 @@ namespace Cube_Bid.API.Controllers
         {
             return Ok(await _bidRepositoryMongo.DeleteAll());
         }
+        #endregion
 
     }
 }

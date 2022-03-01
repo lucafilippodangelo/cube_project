@@ -1,4 +1,5 @@
 ﻿using Cube_Bid.API.Entities;
+using Cube_Bid.API.Repositories;
 using Cube_Bid.API.Repositories.Interfaces;
 using EventBusRabbitMQ;
 using EventBusRabbitMQ.Common;
@@ -17,14 +18,14 @@ namespace Cube_Bid.API.RabbitMq
     public class EventBusRabbitMQConsumer
     {
         private readonly IRabbitMQConnection _connection;
-        private readonly IBidRepositoryRedis _bidRepositoryRedis;
+        private readonly IAuctionsHistoryRepositoryRedis _auctionsHistoryRepositoryRedis;
         private readonly IBidRepositoryMongo _bidRepositoryMongo;
         private readonly IBidValidator _bidValidator;
 
-        public EventBusRabbitMQConsumer(IRabbitMQConnection connection, IBidRepositoryRedis bidRepositoryRedis, IBidRepositoryMongo bidRepositoryMongo, IBidValidator bidValidator)//, IMediator mediator, IMapper mapper, IOrderRepository repository)
+        public EventBusRabbitMQConsumer(IRabbitMQConnection connection, IBidRepositoryRedis bidRepositoryRedis, IBidRepositoryMongo bidRepositoryMongo, IBidValidator bidValidator, IAuctionsHistoryRepositoryRedis auctionsHistoryRepositoryRedis)//, IMediator mediator, IMapper mapper, IOrderRepository repository)
         {
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
-            _bidRepositoryRedis = bidRepositoryRedis ?? throw new ArgumentNullException(nameof(_bidRepositoryRedis));
+            _auctionsHistoryRepositoryRedis = auctionsHistoryRepositoryRedis ?? throw new ArgumentNullException(nameof(_auctionsHistoryRepositoryRedis));
             _bidRepositoryMongo = bidRepositoryMongo ?? throw new ArgumentNullException(nameof(_bidRepositoryMongo));
             _bidValidator = bidValidator ?? throw new ArgumentNullException(nameof(_bidValidator));
         }
@@ -60,9 +61,9 @@ namespace Cube_Bid.API.RabbitMq
                 var message = Encoding.UTF8.GetString(e.Body.Span);
                 var Event = JsonConvert.DeserializeObject<AuctionEvent>(message);
 
-                //I have to store the event in a table storing all the auctions
-
-                //_bidRepositoryRedis.InsertBid(Event.AuctionName + "-"+ Event.Id, Event.AuctionSubscriberName + "-" + Event.Amount + "-" + Event.DateTime);
+                //LD at each auction event I will need to store the update in redis.
+                //I'm using redis as a cache to query from bids in order to check auction status
+                _auctionsHistoryRepositoryRedis.InsertAuctionEvent(Event.Id.ToString()+ "---" + Event.EventCode.ToString(),  Event.EventDateTime+ToString());
             }
 
 

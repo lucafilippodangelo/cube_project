@@ -53,6 +53,9 @@ namespace Cube_Bid.API
             services.AddTransient<IBidContextRedis, BidContextRedis>();
             services.AddTransient<IBidRepositoryRedis, BidReposiroryRedis>();
 
+            services.AddTransient<IAuctionsHistoryContextRedis, AuctionsHistoryContextRedis>();
+            services.AddTransient<IAuctionsHistoryRepositoryRedis, AuctionHistoryRepositoryRedis>();
+
             services.AddTransient<IBidContextMongo, BidContextMongo>();
             services.AddTransient<IBidRepositoryMongo, BidRepositoryMongo>();
 

@@ -88,7 +88,7 @@ namespace Cube_Bid.API.Repositories
         public void AuctionFlushTest()
         {
             //get the specific key
-            var allValues2 = _context.Server.Keys(pattern: "a*");
+            var allValues2 = _context.Server.Keys(pattern: "*");
 
             List<string> aListPOfStrings = new List<string>();
             foreach (var key in allValues2)
