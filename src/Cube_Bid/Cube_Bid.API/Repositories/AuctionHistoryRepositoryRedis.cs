@@ -14,15 +14,15 @@ namespace Cube_Bid.API.Repositories
             _context = context ?? throw new ArgumentNullException(nameof(context));
         }
 
-
-        public List<string> GetAuctionsHistoriesBYAuctionId(string AuctionId)
+        //this method will need to return a structure of key/values
+        public List<string> GetAuctionsHistoriesBYAuctionIdAndEventId(Guid auctionId, int eventId)
         {
             List<string> aListPOfStrings = new List<string>();
-            var allValues2 = _context.Server.Keys(pattern: AuctionId);
+            var allValues2 = _context.Server.Keys(pattern: auctionId.ToString() + "---" + eventId.ToString()); 
 
             foreach (var key in allValues2)
             {
-                string currentString = (key.ToString() + " - " + _context.Redis.StringGet(key).ToString());
+                string currentString = (key.ToString() + "  ---  " + _context.Redis.StringGet(key));
                 aListPOfStrings.Add(currentString);
             }
 

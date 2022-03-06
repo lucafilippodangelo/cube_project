@@ -11,6 +11,7 @@ namespace Cube_Auction.Application
         public Guid AuctionId { get; set; }
         public AuctionStatus AuctionStatus { get; set; }
         public DateTime DateTimeEvent { get; set; }
+        public int DateTimeEventMilliseconds { get; set; }
     }
 
     public enum AuctionStatus

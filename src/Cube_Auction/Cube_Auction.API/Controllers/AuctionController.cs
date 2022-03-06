@@ -69,10 +69,12 @@ namespace Cube_Auction.API.Controllers
 
 
             //LD post creation event
+            var currentUtc = DateTime.UtcNow;
             AuctionHistoryCommand anAuctionHistoryCommand = new AuctionHistoryCommand() 
             {  AuctionId = result.Id, 
                AuctionStatus =  AuctionStatus.Created, 
-               DateTimeEvent =  DateTime.UtcNow };
+               DateTimeEvent = currentUtc,
+               DateTimeEventMilliseconds = currentUtc.Millisecond};
             await _repository.PostAuctionHistory(anAuctionHistoryCommand);
             
 
@@ -81,6 +83,7 @@ namespace Cube_Auction.API.Controllers
             {   AuctionId = result.Id,
                 AuctionStatus = AuctionStatus.Finalised,
                 DateTimeEvent = anAuctionHistoryCommand.DateTimeEvent.AddSeconds(30),
+                DateTimeEventMilliseconds = anAuctionHistoryCommand.DateTimeEventMilliseconds
             };
             await _repository.PostAuctionHistory(anAuctionHistoryCommandTwo);
 
@@ -90,19 +93,11 @@ namespace Cube_Auction.API.Controllers
             try
             {
                 //simulating a mapper from entity to event. At the moment is a speculat matching of attributes
-                AuctionEvent auctionEventMessage = new AuctionEvent();
-                auctionEventMessage.Id = result.Id;
-                auctionEventMessage.EventCode = (int)anAuctionHistoryCommand.AuctionStatus;
-                auctionEventMessage.EventDateTime = anAuctionHistoryCommand.DateTimeEvent;
-                _eventBus.PublishAuctionEvent(EventBusConstants.AuctionEventQueue, auctionEventMessage); 
+                AuctionEvent auctionEventMessage = BuildAuctionEventMessage(result, anAuctionHistoryCommand);
+                _eventBus.PublishAuctionEvent(EventBusConstants.AuctionEventQueue, auctionEventMessage);
 
-
-                //simulating a mapper from entity to event. At the moment is a speculat matching of attributes
-                AuctionEvent auctionEventMessageTwo = new AuctionEvent();
-                auctionEventMessageTwo.Id = result.Id;
-                auctionEventMessageTwo.EventCode = (int)anAuctionHistoryCommandTwo.AuctionStatus;
-                auctionEventMessageTwo.EventDateTime = anAuctionHistoryCommandTwo.DateTimeEvent;
-                _eventBus.PublishAuctionEvent(EventBusConstants.AuctionEventQueue, auctionEventMessageTwo); 
+                auctionEventMessage = BuildAuctionEventMessage(result, anAuctionHistoryCommandTwo);
+                _eventBus.PublishAuctionEvent(EventBusConstants.AuctionEventQueue, auctionEventMessage);
 
             }
             catch (Exception ex)
@@ -115,6 +110,15 @@ namespace Cube_Auction.API.Controllers
             return Ok(result);
         }
 
+        private AuctionEvent BuildAuctionEventMessage(Core.Entities.Auction result, AuctionHistoryCommand anAuctionHistoryCommand)
+        {
+            AuctionEvent auctionEventMessage = new AuctionEvent();
+            auctionEventMessage.Id = result.Id;
+            auctionEventMessage.EventCode = (int)anAuctionHistoryCommand.AuctionStatus;
+            auctionEventMessage.EventDateTime = anAuctionHistoryCommand.DateTimeEvent;
+            auctionEventMessage.EventDateTimeMilliseconds = anAuctionHistoryCommand.DateTimeEventMilliseconds;
+            return auctionEventMessage;
+        }
 
         #region interaction with redis
         /*

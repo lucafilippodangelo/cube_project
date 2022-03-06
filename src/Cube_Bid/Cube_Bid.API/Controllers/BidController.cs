@@ -48,9 +48,9 @@ namespace Cube_Bid.API.Controllers
 
         [HttpGet]
         [ProducesResponseType(typeof(List<string>), (int)HttpStatusCode.OK)]
-        public List<string> REDIS_GetByPrefixPattern(string pattern)
+        public List<string> REDIS_GetByAuctionIdAndEventId(Guid AuctionId, int EventId)
         {
-            return _auctionHistoryRepositoryRedis.GetAuctionsHistoriesBYAuctionId(pattern);
+            return _auctionHistoryRepositoryRedis.GetAuctionsHistoriesBYAuctionIdAndEventId(AuctionId, EventId);
         }
 
         /*

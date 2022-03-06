@@ -63,7 +63,7 @@ namespace Cube_Bid.API.RabbitMq
 
                 //LD at each auction event I will need to store the update in redis.
                 //I'm using redis as a cache to query from bids in order to check auction status
-                _auctionsHistoryRepositoryRedis.InsertAuctionEvent(Event.Id.ToString()+ "---" + Event.EventCode.ToString(),  Event.EventDateTime+ToString());
+                _auctionsHistoryRepositoryRedis.InsertAuctionEvent(Event.Id.ToString()+ "---" + Event.EventCode.ToString(),  Event.EventDateTime.ToString() + "---" + Event.EventDateTimeMilliseconds.ToString());
             }
 
 

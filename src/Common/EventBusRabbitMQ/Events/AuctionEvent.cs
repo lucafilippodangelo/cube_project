@@ -8,5 +8,7 @@ namespace EventBusRabbitMQ.Events
         public int EventCode { get; set; }
         public DateTime EventDateTime { get; set; }
 
+        public int EventDateTimeMilliseconds { get; set; }
+
     }
 }
