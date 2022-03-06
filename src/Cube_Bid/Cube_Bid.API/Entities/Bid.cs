@@ -18,6 +18,7 @@ namespace Cube_Bid.API.Entities
         public Guid AuctionId { get; set; }
         public double Amount { get; set; }  
         public int confirmed { get; set; } //LD this is "0" at creation time, a routine will confirm if valid "1" or not valid "2"  
-        public DateTime DateTime { get; set; } 
+        public DateTime DateTime { get; set; }
+        public int DateTimeMilliseconds { get; set; }
     }
 }

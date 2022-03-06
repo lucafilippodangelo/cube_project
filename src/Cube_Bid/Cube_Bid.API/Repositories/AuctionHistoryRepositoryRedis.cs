@@ -18,11 +18,12 @@ namespace Cube_Bid.API.Repositories
         public List<string> GetAuctionsHistoriesBYAuctionIdAndEventId(Guid auctionId, int eventId)
         {
             List<string> aListPOfStrings = new List<string>();
-            var allValues2 = _context.Server.Keys(pattern: auctionId.ToString() + "---" + eventId.ToString()); 
+            var allValues2 = _context.Server.Keys(pattern: auctionId.ToString() + " " + eventId.ToString());
 
+            //LD returns in the format -> "03359e80-02e2-4dba-9d7d-d941e9d96056 3 06/03/2022 14:43:34 174"
             foreach (var key in allValues2)
             {
-                string currentString = (key.ToString() + "  ---  " + _context.Redis.StringGet(key));
+                string currentString = (key.ToString() + " " + _context.Redis.StringGet(key));
                 aListPOfStrings.Add(currentString);
             }
 

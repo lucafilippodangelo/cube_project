@@ -61,9 +61,9 @@ namespace Cube_Bid.API.RabbitMq
                 var message = Encoding.UTF8.GetString(e.Body.Span);
                 var Event = JsonConvert.DeserializeObject<AuctionEvent>(message);
 
-                //LD at each auction event I will need to store the update in redis.
-                //I'm using redis as a cache to query from bids in order to check auction status
-                _auctionsHistoryRepositoryRedis.InsertAuctionEvent(Event.Id.ToString()+ "---" + Event.EventCode.ToString(),  Event.EventDateTime.ToString() + "---" + Event.EventDateTimeMilliseconds.ToString());
+                //LD NOTE -> AUCTION and AUCTION EVENTS are stored with same hardcoded time in both DB 
+                _auctionsHistoryRepositoryRedis.InsertAuctionEvent(Event.Id.ToString()+ " " + Event.EventCode.ToString(),  
+                                                                   Event.EventDateTime.ToString() + " " + Event.EventDateTimeMilliseconds.ToString());
             }
 
 
@@ -80,7 +80,8 @@ namespace Cube_Bid.API.RabbitMq
                 aBid.AuctionId = Event.AuctionId;
                 aBid.Amount = Event.Amount;
                 aBid.confirmed = 0; //LD by default is in "Pending status"
-                aBid.DateTime = Event.DateTime;
+                aBid.DateTime = DateTime.UtcNow;
+                aBid.DateTimeMilliseconds = aBid.DateTime.Millisecond;
 
                 await _bidRepositoryMongo.Create(aBid);
 
