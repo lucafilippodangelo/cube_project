@@ -19,8 +19,6 @@ namespace Cube_Bid.API.Controllers
         private readonly IBidRepositoryMongo _bidRepositoryMongo;
         private readonly ILogger<BidController> _logger;
 
-
-
         public BidController(IAuctionReposirory repository, IAuctionsHistoryRepositoryRedis auctionHistoryRepositoryRedis, IBidRepositoryMongo bidRepositoryMongo, ILogger<BidController> logger)
         {
             _repository = repository ?? throw new ArgumentNullException(nameof(repository));

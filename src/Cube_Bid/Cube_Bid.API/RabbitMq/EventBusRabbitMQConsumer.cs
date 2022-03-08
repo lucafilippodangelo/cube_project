@@ -76,7 +76,7 @@ namespace Cube_Bid.API.RabbitMq
                 var Event = JsonConvert.DeserializeObject<BidCreationEvent>(message);
 
                 Bid aBid = new Bid();
-                aBid.BidName = ("Created By Routine with thread: " + Thread.CurrentThread.ManagedThreadId.ToString());
+                aBid.BidName = ("Created at " + DateTime.UtcNow + " by thread: " + Thread.CurrentThread.ManagedThreadId.ToString());
                 aBid.AuctionId = Event.AuctionId;
                 aBid.Amount = Event.Amount;
                 aBid.confirmed = 0; //LD by default is in "Pending status"
@@ -85,11 +85,11 @@ namespace Cube_Bid.API.RabbitMq
 
                 await _bidRepositoryMongo.Create(aBid);
 
-                //LD STEP TWO -> validate bid already stored in mongo (parallel thread)
+                //LD STEP TWO -> validate bid already stored in mongo (parallel threads)
                 var t = Task.Run(() => {
                     var validationResponse = _bidValidator.ValidateInputBid(aBid);
                     aBid.confirmed = validationResponse;
-                    aBid.BidName = aBid.BidName + (" - Updated By thread: " + Thread.CurrentThread.ManagedThreadId.ToString());
+                    aBid.BidName = aBid.BidName + (" - Updated at " + DateTime.UtcNow + " by thread: " + Thread.CurrentThread.ManagedThreadId.ToString());
                     _bidRepositoryMongo.Update(aBid);
                 });
 
