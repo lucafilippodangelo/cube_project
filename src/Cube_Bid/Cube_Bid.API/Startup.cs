@@ -6,6 +6,7 @@ using Cube_Bid.API.Repositories;
 using Cube_Bid.API.Repositories.Interfaces;
 using Cube_Bid.API.Settings;
 using EventBusRabbitMQ;
+using EventBusRabbitMQ.Producer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -96,6 +97,7 @@ namespace Cube_Bid.API
             //LD Note, this will not work if repositories are not declared before "AutoMaper"
             // in this "ConfigureServices" method
             services.AddSingleton<EventBusRabbitMQConsumer>();
+            services.AddSingleton<EventBusRabbitMQProducer>();
 
             #endregion
 

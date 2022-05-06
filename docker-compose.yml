@@ -15,17 +15,17 @@ services:
         image: rabbitmq:3-management-alpine
 
 
-    cube_auction.api:
-        image: ${DOCKER_REGISTRY-}cube_auction
-        build:
-            context: .
-            dockerfile: src/Cube_Auction/Cube_Auction.API/Dockerfile
+    #cube_auction.api:
+    #    image: ${DOCKER_REGISTRY-}cube_auction
+    #    build:
+    #        context: .
+    #        dockerfile: src/Cube_Auction/Cube_Auction.API/Dockerfile
 
-    cube_bid.api:
-        image: ${DOCKER_REGISTRY-}cube_bid
-        build:
-            context: .
-            dockerfile: src/Cube_Bid/Cube_Bid.API/Dockerfile
+    #cube_bid.api:
+    #    image: ${DOCKER_REGISTRY-}cube_bid
+    #    build:
+    #        context: .
+    #        dockerfile: src/Cube_Bid/Cube_Bid.API/Dockerfile
         
 
 

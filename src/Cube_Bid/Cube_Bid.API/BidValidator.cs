@@ -41,8 +41,8 @@ namespace Cube_Bid.API
 
             if (aBid.DateTime.CompareTo(parsedTime) > 0)
             {
-                //so if Bid is later than "parsedTime"
-                return 2; //"two" means not valid
+                
+                return 2; //so if Bid datetime is later than "parsedTime" return "2", means "not valid"
             }
             else if (aBid.DateTime.CompareTo(parsedTime) < 0)
             {
@@ -60,9 +60,6 @@ namespace Cube_Bid.API
                 return 1; //return not valid by default
             }
 
-
-
-            return 2;
         }
     }
 }

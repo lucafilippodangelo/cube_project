@@ -62,7 +62,7 @@ namespace Cube_Auction.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(typeof(AuctionResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> MSSQL_CreateAuction([FromBody] AuctionCommand command)
+        public async Task<IActionResult> MSSQL_CreateAuction_AND_CallBidCreationPerAuction([FromBody] AuctionCommand command)
         {
             //LD when creating an auction we do create the auction itseld and the history records(one for create and one for finalise)
             var result = await _repository.PostAuction(command);
@@ -82,7 +82,7 @@ namespace Cube_Auction.API.Controllers
             AuctionHistoryCommand anAuctionHistoryCommandTwo = new AuctionHistoryCommand()
             {   AuctionId = result.Id,
                 AuctionStatus = AuctionStatus.Finalised,
-                DateTimeEvent = anAuctionHistoryCommand.DateTimeEvent.AddSeconds(30),
+                DateTimeEvent = anAuctionHistoryCommand.DateTimeEvent.AddSeconds(5),
                 DateTimeEventMilliseconds = anAuctionHistoryCommand.DateTimeEventMilliseconds
             };
             await _repository.PostAuctionHistory(anAuctionHistoryCommandTwo);
@@ -94,10 +94,10 @@ namespace Cube_Auction.API.Controllers
             {
                 //simulating a mapper from entity to event. At the moment is a speculat matching of attributes
                 AuctionEvent auctionEventMessage = BuildAuctionEventMessage(result, anAuctionHistoryCommand);
-                _eventBus.PublishAuctionEvent(EventBusConstants.AuctionEventQueue, auctionEventMessage);
+                _eventBus.PublishAuctionEvent(EventBusConstants.QUEUE_AuctionEvent, auctionEventMessage);
 
                 auctionEventMessage = BuildAuctionEventMessage(result, anAuctionHistoryCommandTwo);
-                _eventBus.PublishAuctionEvent(EventBusConstants.AuctionEventQueue, auctionEventMessage);
+                _eventBus.PublishAuctionEvent(EventBusConstants.QUEUE_AuctionEvent, auctionEventMessage);
 
             }
             catch (Exception ex)
@@ -106,6 +106,8 @@ namespace Cube_Auction.API.Controllers
                 throw;
             }
 
+
+            await TEST_postAuctionAndCreateBidsForIt(result.Id);
 
             return Ok(result);
         }
@@ -120,7 +122,7 @@ namespace Cube_Auction.API.Controllers
             return auctionEventMessage;
         }
 
-        #region interaction with redis
+        #region interaction with redis (not used)
         /*
                 [HttpPost]
                 [ProducesResponseType(typeof(AuctionResponse), (int)HttpStatusCode.OK)]
@@ -232,10 +234,10 @@ namespace Cube_Auction.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(typeof(AuctionResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> MONGO_Post5000BidsToQueue_ThoseBidsWillBeStoredInMongo(Guid auctionId)
+        public async Task<IActionResult> TEST_postAuctionAndCreateBidsForIt(Guid auctionId)
         {
             //5000 "a1"
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 1000; i++)
             {
                 //simulating a mapper from entity to event. At the moment is a speculat matching of attributes
                 BidCreationEvent eventMessage = new BidCreationEvent();
@@ -246,7 +248,7 @@ namespace Cube_Auction.API.Controllers
 
                 try
                 {
-                    _eventBus.PublishBidCreation(EventBusConstants.BidCreationQueue_Mongo, eventMessage); //need to create event object
+                    _eventBus.PublishBidCreation(EventBusConstants.QUEUE_BidCreation, eventMessage); //need to create event object
                 }
                 catch (Exception ex)
                 {

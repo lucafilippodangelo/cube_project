@@ -71,15 +71,20 @@ namespace EventBusRabbitMQ.Producer
 
         public void PublishBidCreation(string queueName, BidCreationEvent publishModel)
         {
-            PublishCreation(queueName, publishModel);
+            Publish(queueName, publishModel);
+        }
+
+        public void PublishBidStatusFinalization(string queueName, BidFinalizationEvent publishModel)
+        {
+            Publish(queueName, publishModel);
         }
 
         public void PublishAuctionEvent(string queueName, AuctionEvent publishModel)
         {
-            PublishCreation(queueName, publishModel);
+            Publish(queueName, publishModel);
         }
 
-        public void PublishCreation(string queueName, Object publishModel)
+        public void Publish(string queueName, Object publishModel)
         {
             using (var channel = _connection.CreateModel())
             {

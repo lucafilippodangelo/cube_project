@@ -4,6 +4,7 @@ using Cube_Bid.API.Repositories.Interfaces;
 using EventBusRabbitMQ;
 using EventBusRabbitMQ.Common;
 using EventBusRabbitMQ.Events;
+using EventBusRabbitMQ.Producer;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -21,13 +22,20 @@ namespace Cube_Bid.API.RabbitMq
         private readonly IAuctionsHistoryRepositoryRedis _auctionsHistoryRepositoryRedis;
         private readonly IBidRepositoryMongo _bidRepositoryMongo;
         private readonly IBidValidator _bidValidator;
+        private readonly EventBusRabbitMQProducer _eventBus;
 
-        public EventBusRabbitMQConsumer(IRabbitMQConnection connection, IBidRepositoryRedis bidRepositoryRedis, IBidRepositoryMongo bidRepositoryMongo, IBidValidator bidValidator, IAuctionsHistoryRepositoryRedis auctionsHistoryRepositoryRedis)//, IMediator mediator, IMapper mapper, IOrderRepository repository)
+        public EventBusRabbitMQConsumer(IRabbitMQConnection connection, 
+                                        IBidRepositoryRedis bidRepositoryRedis, 
+                                        IBidRepositoryMongo bidRepositoryMongo, 
+                                        IBidValidator bidValidator, 
+                                        IAuctionsHistoryRepositoryRedis auctionsHistoryRepositoryRedis,
+                                        EventBusRabbitMQProducer eventBus)//, IMediator mediator, IMapper mapper, IOrderRepository repository)
         {
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
             _auctionsHistoryRepositoryRedis = auctionsHistoryRepositoryRedis ?? throw new ArgumentNullException(nameof(_auctionsHistoryRepositoryRedis));
             _bidRepositoryMongo = bidRepositoryMongo ?? throw new ArgumentNullException(nameof(_bidRepositoryMongo));
             _bidValidator = bidValidator ?? throw new ArgumentNullException(nameof(_bidValidator));
+            _eventBus = eventBus ?? throw new ArgumentNullException(nameof(eventBus));
         }
 
 
@@ -36,19 +44,19 @@ namespace Cube_Bid.API.RabbitMq
 
             //LD consuming the queue "AuctionEventQueue" ------------------------------------
             var channelTwo = _connection.CreateModel();
-            channelTwo.QueueDeclare(queue: EventBusConstants.AuctionEventQueue, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            channelTwo.QueueDeclare(queue: EventBusConstants.QUEUE_AuctionEvent, durable: false, exclusive: false, autoDelete: false, arguments: null);
             var consumerTwo = new EventingBasicConsumer(channelTwo);
             //Create event when something receive
             consumerTwo.Received += ReceivedEvent;
-            channelTwo.BasicConsume(queue: EventBusConstants.AuctionEventQueue, autoAck: true, consumer: consumerTwo);
+            channelTwo.BasicConsume(queue: EventBusConstants.QUEUE_AuctionEvent, autoAck: true, consumer: consumerTwo);
 
             //LD consuming the queue "BidCreationQueue" ------------------------------------
             var channelThree = _connection.CreateModel();
-            channelThree.QueueDeclare(queue: EventBusConstants.BidCreationQueue_Mongo, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            channelThree.QueueDeclare(queue: EventBusConstants.QUEUE_BidCreation, durable: false, exclusive: false, autoDelete: false, arguments: null);
             var consumerThree = new EventingBasicConsumer(channelThree);
             //Create event when something receive
             consumerThree.Received += ReceivedEvent;
-            channelThree.BasicConsume(queue: EventBusConstants.BidCreationQueue_Mongo, autoAck: true, consumer: consumerThree);
+            channelThree.BasicConsume(queue: EventBusConstants.QUEUE_BidCreation, autoAck: true, consumer: consumerThree);
 
 
         }
@@ -56,7 +64,7 @@ namespace Cube_Bid.API.RabbitMq
         //ORDERS APPLICATION
         private async void ReceivedEvent(object sender, BasicDeliverEventArgs e)
         {
-            if (e.RoutingKey == EventBusConstants.AuctionEventQueue)
+            if (e.RoutingKey == EventBusConstants.QUEUE_AuctionEvent)
             {
                 var message = Encoding.UTF8.GetString(e.Body.Span);
                 var Event = JsonConvert.DeserializeObject<AuctionEvent>(message);
@@ -68,7 +76,7 @@ namespace Cube_Bid.API.RabbitMq
 
 
             
-            if (e.RoutingKey == EventBusConstants.BidCreationQueue_Mongo)
+            if (e.RoutingKey == EventBusConstants.QUEUE_BidCreation)
             {
 
                 //LD STEP ONE -> store bid in mongo
@@ -82,7 +90,6 @@ namespace Cube_Bid.API.RabbitMq
                 aBid.confirmed = 0; //LD by default is in "Pending status"
                 aBid.DateTime = DateTime.UtcNow;
                 aBid.DateTimeMilliseconds = aBid.DateTime.Millisecond;
-
                 await _bidRepositoryMongo.Create(aBid);
 
                 //LD STEP TWO -> validate bid already stored in mongo (parallel threads)
@@ -91,6 +98,20 @@ namespace Cube_Bid.API.RabbitMq
                     aBid.confirmed = validationResponse;
                     aBid.BidName = aBid.BidName + (" - Updated at " + DateTime.UtcNow + " by thread: " + Thread.CurrentThread.ManagedThreadId.ToString());
                     _bidRepositoryMongo.Update(aBid);
+
+                    //NEW STEP: call producer from here, need to put in queue that the bid has beed processed
+                    try
+                    {
+                        BidFinalizationEvent eventMessage = new BidFinalizationEvent();
+                        eventMessage.BasicLog = aBid.BidName;
+                       
+                        _eventBus.PublishBidStatusFinalization(EventBusConstants.QUEUE_BidFinalization, eventMessage); //need to create event object
+                    }
+                    catch (Exception ex)
+                    {
+                        throw;
+                    }
+
                 });
 
 

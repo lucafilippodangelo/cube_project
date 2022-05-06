@@ -2,11 +2,9 @@
 {
     public static class EventBusConstants
     {
-        public const string AuctionEventQueue = "auctionEventQueue";
+        public const string QUEUE_AuctionEvent = "QUEUE_AuctionEvent";
         //public const string BidCreationQueue_Redis = "bidCreationQueue_Redis"; //LD not used anymore
-        public const string BidCreationQueue_Mongo = "bidCreationQueue_Mongo";
-
-        public const string BasketCheckoutQueue = "basketCheckoutQueue";
-        public const string SecondConsumerQueue = "secondConsumerQueue";
+        public const string QUEUE_BidCreation = "QUEUE_BidCreation";
+        public const string QUEUE_BidFinalization = "QUEUE_BidFinalization";
     }
 }
