@@ -35,7 +35,7 @@ namespace EventBusRabbitMQ
             {
                 _connection = _connectionFactory.CreateConnection();
             }
-            catch (BrokerUnreachableException)
+            catch (Exception msg)
             {
                 Thread.Sleep(2000);
                 _connection = _connectionFactory.CreateConnection();

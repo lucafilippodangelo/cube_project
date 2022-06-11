@@ -1,3 +1,4 @@
+using Cube_BidsSignalR.CustomSignalR;
 using Cube_BidsSignalR.RabbitMQ;
 using EventBusRabbitMQ;
 using Microsoft.AspNetCore.Builder;
@@ -27,6 +28,7 @@ namespace Cube_BidsSignalR
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
+            services.AddSignalR();
 
             #region RabbitMQ Dependencies
 
@@ -87,6 +89,7 @@ namespace Cube_BidsSignalR
                 endpoints.MapControllerRoute(
                     name: "default",
                     pattern: "{controller=Home}/{action=Index}/{id?}");
+                endpoints.MapHub<AnHub>("/anHub");
             });
         }
     }

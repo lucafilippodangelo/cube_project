@@ -79,7 +79,7 @@ namespace Cube_Bid.API.RabbitMq
             if (e.RoutingKey == EventBusConstants.QUEUE_BidCreation)
             {
 
-                //LD STEP ONE -> store bid in mongo
+            //LD STEP ONE -> store bid in mongo
                 var message = Encoding.UTF8.GetString(e.Body.Span);
                 var Event = JsonConvert.DeserializeObject<BidCreationEvent>(message);
 
@@ -92,7 +92,7 @@ namespace Cube_Bid.API.RabbitMq
                 aBid.DateTimeMilliseconds = aBid.DateTime.Millisecond;
                 await _bidRepositoryMongo.Create(aBid);
 
-                //LD STEP TWO -> validate bid already stored in mongo (parallel threads)
+            //LD STEP TWO -> validate bid already stored in mongo (parallel threads)
                 var t = Task.Run(() => {
                     var validationResponse = _bidValidator.ValidateInputBid(aBid);
                     aBid.confirmed = validationResponse;

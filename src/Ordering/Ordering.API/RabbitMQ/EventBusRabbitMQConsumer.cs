@@ -32,20 +32,20 @@ namespace Ordering.API.RabbitMQ
         public void Consume()
         {
             var channel = _connection.CreateModel();
-            channel.QueueDeclare(queue: EventBusConstants.BasketCheckoutQueue, durable: false, exclusive: false, autoDelete: false, arguments: null);
+            channel.QueueDeclare(queue: EventBusConstants.SecondConsumerQueue, durable: false, exclusive: false, autoDelete: false, arguments: null);
 
             var consumer = new EventingBasicConsumer(channel);
 
             //Create event when something receive
             consumer.Received += ReceivedEvent;
 
-            channel.BasicConsume(queue: EventBusConstants.BasketCheckoutQueue, autoAck:true, consumer: consumer);
+            channel.BasicConsume(queue: EventBusConstants.SecondConsumerQueue, autoAck:true, consumer: consumer);
         }
 
         //ORDERS APPLICATION
         private async void ReceivedEvent(object sender, BasicDeliverEventArgs e)
         {
-            if (e.RoutingKey == EventBusConstants.BasketCheckoutQueue)
+            if (e.RoutingKey == EventBusConstants.SecondConsumerQueue)
             {
                 var message = Encoding.UTF8.GetString(e.Body.Span);
                 var basketCheckoutEvent = JsonConvert.DeserializeObject<BasketCheckoutEvent>(message);

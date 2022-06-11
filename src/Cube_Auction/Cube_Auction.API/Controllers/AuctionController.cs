@@ -234,7 +234,7 @@ namespace Cube_Auction.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(typeof(AuctionResponse), (int)HttpStatusCode.OK)]
-        public async Task<IActionResult> TEST_postAuctionAndCreateBidsForIt(Guid auctionId)
+        private async Task<IActionResult> TEST_postAuctionAndCreateBidsForIt(Guid auctionId)
         {
             //5000 "a1"
             for (int i = 0; i < 1000; i++)
