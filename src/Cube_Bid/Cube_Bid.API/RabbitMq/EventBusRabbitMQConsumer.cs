@@ -64,6 +64,7 @@ namespace Cube_Bid.API.RabbitMq
         //ORDERS APPLICATION
         private async void ReceivedEvent(object sender, BasicDeliverEventArgs e)
         {
+        //LD STORE AUCTION EVENT IN REDIS    
             if (e.RoutingKey == EventBusConstants.QUEUE_AuctionEvent)
             {
                 var message = Encoding.UTF8.GetString(e.Body.Span);
@@ -75,7 +76,7 @@ namespace Cube_Bid.API.RabbitMq
             }
 
 
-            
+        //LD STORE BID in mongo and ASYNC VALIDATION  
             if (e.RoutingKey == EventBusConstants.QUEUE_BidCreation)
             {
 
@@ -94,16 +95,17 @@ namespace Cube_Bid.API.RabbitMq
 
             //LD STEP TWO -> validate bid already stored in mongo (parallel threads)
                 var t = Task.Run(() => {
-                    var validationResponse = _bidValidator.ValidateInputBid(aBid);
+                    var validationResponse = _bidValidator.ValidateInputBid(aBid);//validation calls REDIS
                     aBid.confirmed = validationResponse;
                     aBid.BidName = aBid.BidName + (" - Updated at " + DateTime.UtcNow + " by thread: " + Thread.CurrentThread.ManagedThreadId.ToString());
                     _bidRepositoryMongo.Update(aBid);
 
-                    //NEW STEP: call producer from here, need to put in queue that the bid has beed processed
+            //LD STEP THREE: create finalization event and update queue
                     try
                     {
                         BidFinalizationEvent eventMessage = new BidFinalizationEvent();
                         eventMessage.BasicLog = aBid.BidName;
+                        eventMessage.Status = aBid.confirmed;
                        
                         _eventBus.PublishBidStatusFinalization(EventBusConstants.QUEUE_BidFinalization, eventMessage); //need to create event object
                     }

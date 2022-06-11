@@ -36,7 +36,7 @@ namespace Cube_BidsSignalR.RabbitMQ
 
         }
 
-        //ORDERS APPLICATION
+        //RECEIVING Bid validation event 
         private async void ReceivedEvent(object sender, BasicDeliverEventArgs e)
         {
             if (e.RoutingKey == EventBusConstants.QUEUE_BidFinalization)
@@ -44,7 +44,7 @@ namespace Cube_BidsSignalR.RabbitMQ
                 var message = Encoding.UTF8.GetString(e.Body.Span);
                 var Event = JsonConvert.DeserializeObject<BidFinalizationEvent>(message);
 
-                await _hub.Clients.All.SendAsync("ReceiveMessage", "user", message);
+                await _hub.Clients.All.SendAsync("ReceiveMessage", "Conf. Status: " + Event.Status + " - ", message);
             }
         }
 

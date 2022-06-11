@@ -237,7 +237,7 @@ namespace Cube_Auction.API.Controllers
         private async Task<IActionResult> TEST_postAuctionAndCreateBidsForIt(Guid auctionId)
         {
             //5000 "a1"
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 5000; i++)
             {
                 //simulating a mapper from entity to event. At the moment is a speculat matching of attributes
                 BidCreationEvent eventMessage = new BidCreationEvent();

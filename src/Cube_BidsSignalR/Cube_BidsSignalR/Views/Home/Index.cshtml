@@ -21,10 +21,51 @@
             <hr />
         </div>
     </div>*@
+
+
+    <head>
+    <style>
+        ol.a {
+          list-style-type: circle;
+        }
+
+        ol.b {
+          list-style-type: square;
+        }
+
+        ol.c {
+          list-style-type: upper-roman;
+        }
+
+        ol.d {
+          list-style-type: lower-alpha;
+        }
+        </style>
+    </head>
+
+    <div class="container">
+      <div class="row">
+        <div class="col-sm">
+          most recent validated bid at the top:
+        </div>
+        <div class="row">&nbsp;</div>
+       @* <div class="col-sm">
+          One of three columns
+        </div>
+        <div class="col-sm">
+          One of three columns
+        </div>*@
+      </div>
+    </div>
+
+
     <div class="row">
-        <div class="col-6">
-            <ul id="messagesList"></ul>
+        <div class="col">
+            <ol class="a" id="messagesList"></ol>
         </div>
     </div>
+
+
+<script src="~/js/bootstrap.js/bootstrap.min.js"></script>
 <script src="~/js/signalr/dist/browser/signalr.js"></script>
 <script src="~/js/chat.js"></script>
