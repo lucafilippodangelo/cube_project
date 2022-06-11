@@ -1,6 +1,8 @@
-﻿using EventBusRabbitMQ;
+﻿using Cube_BidsSignalR.CustomSignalR;
+using EventBusRabbitMQ;
 using EventBusRabbitMQ.Common;
 using EventBusRabbitMQ.Events;
+using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
@@ -12,9 +14,11 @@ namespace Cube_BidsSignalR.RabbitMQ
     public class Cube_BidsSignalR_RabbitMQConsumer
     {
         private readonly IRabbitMQConnection _connection;
+        private IHubContext<AnHub> _hub;
 
-        public Cube_BidsSignalR_RabbitMQConsumer(IRabbitMQConnection connection)
+        public Cube_BidsSignalR_RabbitMQConsumer(IRabbitMQConnection connection, IHubContext<AnHub> hub)
         {
+            _hub = hub;
             _connection = connection ?? throw new ArgumentNullException(nameof(connection));
         }
 
@@ -40,7 +44,7 @@ namespace Cube_BidsSignalR.RabbitMQ
                 var message = Encoding.UTF8.GetString(e.Body.Span);
                 var Event = JsonConvert.DeserializeObject<BidFinalizationEvent>(message);
 
-                var luca = 1;
+                await _hub.Clients.All.SendAsync("ReceiveMessage", "user", message);
             }
         }
 

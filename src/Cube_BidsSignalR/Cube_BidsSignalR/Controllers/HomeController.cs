@@ -26,7 +26,7 @@ namespace Cube_BidsSignalR.Controllers
         public IActionResult Index()
         {
             //LD this is to test that the message is sent and visualized after page load and signalr client is connected
-            var t = Task.Run(() => ShowThreadInfo());
+            //var t = Task.Run(() => ShowThreadInfo());
             
             return View();
             
@@ -34,7 +34,7 @@ namespace Cube_BidsSignalR.Controllers
 
         private void ShowThreadInfo()
         {
-            Thread.Sleep(2000);
+            Thread.Sleep(5000);
             _hub.Clients.All.SendAsync("ReceiveMessage", "user", "message");
         }
 
