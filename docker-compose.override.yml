@@ -45,40 +45,51 @@ services:
             - "15672:15672" 
 
 
-    #cube_auction.api:
-    #    container_name: cube_auctionapi
-    #    restart: on-failure
-    #    environment:
-    #        - ASPNETCORE_ENVIRONMENT=Development
-    #        - "ConnectionStrings:OrderConnection=Server=orderdb;Database=OrderDb;User Id=sa;Password=SwN12345678"
-    #        - "EventBus:HostName=rabbitmq"
-    #    depends_on:
-    #        - orderdb
-    #        - rabbitmq 
-    #    networks:
-    #        - app-tier
-    #    ports:
-    #        - "8007:80"
+    cube_auction.api:
+        container_name: cube_auctionapi
+        restart: on-failure
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - "ConnectionStrings:OrderConnection=Server=orderdb;Database=OrderDb;User Id=sa;Password=SwN12345678"
+            - "EventBus:HostName=rabbitmq"
+        depends_on:
+            - orderdb
+            - rabbitmq 
+        networks:
+            - app-tier
+        ports:
+            - "8007:80"
 
 
-    #cube_bid.api:
-    #    container_name: cube_bidapi
-    #    restart: on-failure
-    #    environment:
-    #        - ASPNETCORE_ENVIRONMENT=Development
-    #        - "ConnectionStrings:Redis=db_redis:6379"
-    #        - "BidMongoDatabaseSettings:ConnectionString=mongodb://mongo:27017"
-    #        - "EventBus:HostName=rabbitmq"
-    #    depends_on:
-    #        - db_mongo
-    #        - db_redis
-    #        - rabbitmq 
-    #    networks:
-    #        - app-tier
-    #    ports:
-    #        - "8008:80"
+    cube_bid.api:
+        container_name: cube_bidapi
+        restart: on-failure
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - "ConnectionStrings:Redis=db_redis:6379"
+            - "BidMongoDatabaseSettings:ConnectionString=mongodb://mongo:27017"
+            - "EventBus:HostName=rabbitmq"
+        depends_on:
+            - db_mongo
+            - db_redis
+            - rabbitmq 
+        networks:
+            - app-tier
+        ports:
+            - "8008:80"
 
-
+    cube_bidssignalr:
+        container_name: cube_bidssignalr
+        restart: on-failure
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - "EventBus:HostName=rabbitmq"
+        depends_on:
+            - rabbitmq 
+        networks:
+            - app-tier
+        ports:
+            - "9008:80"
 
 
             
@@ -145,32 +156,7 @@ services:
     #        - "7000:80"
 
 
-    #aspnetrunbasics:
-    #    container_name: aspnetrunbasics
-    #    environment:
-    #        - ASPNETCORE_ENVIRONMENT=Development
-    #        - "ApiSettings:BaseAddress=apigateway"
-    #    depends_on:
-    #        - catalog.api
-    #        - basket.api
-    #        - ordering.api
-    #        - apigateway
-    #    volumes:
-    #        - ./appdata/Microsoft/UserSecrets:/root/.microsoft/usersecrets:ro
-    #        - ./appdata/ASP.NET/Https:/root/.aspnet/https:ro
-    #    ports:
-    #        - "8003:80"
 
 
-    #asecondconsumerld:
-    #    container_name: asecondconsumerld
-    #    environment:
-    #        - ASPNETCORE_ENVIRONMENT=Development
-    #        #- ASPNETCORE_URLS=https://+:443;http://+:80
-    #        - "EventBus:HostName=rabbitmq"
-    #    depends_on:
-    #        - rabbitmq
-    #    ports:
-    #        - "8004:80"
-    #    volumes:
-    #        - ${APPDATA}/ASP.NET/Https:/root/.aspnet/https:ro
+
+

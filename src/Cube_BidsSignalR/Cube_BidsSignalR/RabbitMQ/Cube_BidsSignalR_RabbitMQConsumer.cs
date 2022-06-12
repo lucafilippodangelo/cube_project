@@ -44,7 +44,7 @@ namespace Cube_BidsSignalR.RabbitMQ
                 var message = Encoding.UTF8.GetString(e.Body.Span);
                 var Event = JsonConvert.DeserializeObject<BidFinalizationEvent>(message);
 
-                await _hub.Clients.All.SendAsync("ReceiveMessage", "Conf. Status: " + Event.Status + " - ", message);
+                await _hub.Clients.All.SendAsync("ReceiveMessage", " - ", message);
             }
         }
 

@@ -15,18 +15,23 @@ services:
         image: rabbitmq:3-management-alpine
 
 
-    #cube_auction.api:
-    #    image: ${DOCKER_REGISTRY-}cube_auction
-    #    build:
-    #        context: .
-    #        dockerfile: src/Cube_Auction/Cube_Auction.API/Dockerfile
+    cube_auction.api:
+        image: ${DOCKER_REGISTRY-}cube_auction
+        build:
+            context: .
+            dockerfile: src/Cube_Auction/Cube_Auction.API/Dockerfile
 
-    #cube_bid.api:
-    #    image: ${DOCKER_REGISTRY-}cube_bid
-    #    build:
-    #        context: .
-    #        dockerfile: src/Cube_Bid/Cube_Bid.API/Dockerfile
-        
+    cube_bid.api:
+        image: ${DOCKER_REGISTRY-}cube_bid
+        build:
+            context: .
+            dockerfile: src/Cube_Bid/Cube_Bid.API/Dockerfile
+  
+    cube_bidssignalr:
+        image: ${DOCKER_REGISTRY-}cube_bidssignalr
+        build:
+            context: .
+            dockerfile: src/Cube_BidsSignalR/Cube_BidsSignalR/Dockerfile
 
 
     #catalog.api:
@@ -53,15 +58,6 @@ services:
     #        context: .
     #        dockerfile: src/ApiGateway/APIGateway/Dockerfile
 
-    #aspnetrunbasics:
-    #    image: ${DOCKER_REGISTRY-}aspnetrunbasics
-    #    build:
-    #        context: .
-    #        dockerfile: src/WebApp/AspnetRunBasics/Dockerfile
 
-    #asecondconsumerld:
-    #    image: ${DOCKER_REGISTRY-}asecondconsumerld
-    #    build:
-    #        context: .
-    #        dockerfile: src/ASecondConsumerLd/Dockerfile
+
 
