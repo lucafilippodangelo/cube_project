@@ -9,6 +9,7 @@ using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Threading;
@@ -70,6 +71,7 @@ namespace Cube_Bid.API.RabbitMq
                 var message = Encoding.UTF8.GetString(e.Body.Span);
                 var Event = JsonConvert.DeserializeObject<AuctionEvent>(message);
 
+                Debug.WriteLine("REDIS STORE ->" + message);
                 //LD NOTE -> AUCTION and AUCTION EVENTS are stored with same hardcoded time in both DB 
                 _auctionsHistoryRepositoryRedis.InsertAuctionEvent(Event.Id.ToString()+ " " + Event.EventCode.ToString(),  
                                                                    Event.EventDateTime.ToString() + " " + Event.EventDateTimeMilliseconds.ToString());
@@ -79,35 +81,49 @@ namespace Cube_Bid.API.RabbitMq
         //LD STORE BID in mongo and ASYNC VALIDATION  
             if (e.RoutingKey == EventBusConstants.QUEUE_BidCreation)
             {
-
-            //LD STEP ONE -> store bid in mongo
                 var message = Encoding.UTF8.GetString(e.Body.Span);
                 var Event = JsonConvert.DeserializeObject<BidCreationEvent>(message);
+                //TEMP FOR DEBUG
+                Debug.WriteLine("CONSUMER 002 ->" + message);
+                //TEMP FOR DEBUG (END)
 
+
+                //LD STEP ONE -> store bid in mongo
                 Bid aBid = new Bid();
-                aBid.BidName = ("n." + Event.IncrementalId + " - Created at " + DateTime.UtcNow + " by thread: " + Thread.CurrentThread.ManagedThreadId.ToString());
-                aBid.AuctionId = Event.AuctionId;
-                aBid.Amount = Event.Amount;
-                aBid.confirmed = 0; //LD by default is in "Pending status"
-                aBid.DateTime = DateTime.UtcNow;
-                aBid.DateTimeMilliseconds = aBid.DateTime.Millisecond;
-                await _bidRepositoryMongo.Create(aBid);
+                try
+                {
+                    aBid.BidName = ("n." + Event.IncrementalId + " - Created at " + DateTime.UtcNow + " by thread: " + Thread.CurrentThread.ManagedThreadId.ToString());
+                    aBid.AuctionId = Event.AuctionId;
+                    aBid.Amount = Event.Amount;
+                    aBid.confirmed = 0; //LD by default is in "Pending status"
+                    aBid.DateTime = DateTime.UtcNow;
+                    aBid.DateTimeMilliseconds = aBid.DateTime.Millisecond;
+                    await _bidRepositoryMongo.Create(aBid);
+                    Debug.WriteLine("STORE MONGO WRITE ->" + aBid.BidName);
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
 
-            //LD STEP TWO -> validate bid already stored in mongo (parallel threads)
+                //LD STEP TWO -> validate bid already stored in mongo (parallel threads)
                 var t = Task.Run(() => 
                 {
+
                     var validationResponse = _bidValidator.ValidateInputBid(aBid);//validation by creation date. REDIS is used as source for auction data events comparison
                     aBid.confirmed = validationResponse;
                     aBid.BidName = aBid.BidName + (" - Updated at " + DateTime.UtcNow + " by thread: " + Thread.CurrentThread.ManagedThreadId.ToString());
                     _bidRepositoryMongo.Update(aBid);
+                    Debug.WriteLine("STORE MONGO UPDATE ->" + aBid.BidName);
 
-            //LD STEP THREE: create finalization event and update queue
+
+                    //LD STEP THREE: create finalization event and update queue
                     try
                     {
                         BidFinalizationEvent eventMessage = new BidFinalizationEvent();
                         eventMessage.BasicLog = aBid.BidName;
                         eventMessage.Status = aBid.confirmed;
-                       
+                        Debug.WriteLine("UPDATE QUEUE FINALIZATION ->" + aBid.BidName);
                         _eventBus.PublishBidStatusFinalization(EventBusConstants.QUEUE_BidFinalization, eventMessage); //need to create event object
                     }
                     catch (Exception ex)

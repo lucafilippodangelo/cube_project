@@ -6,8 +6,8 @@
     //Disable send button until connection is established
     //document.getElementById("sendButton").disabled = true;
 
-    connection.on("ReceiveMessage", function (user, message) {
-        var newNode = document.createElement("li");
+connection.on("ReceiveMessage", function (user, message) {
+    var newNode = document.createElement("li");
         const list = document.getElementById("messagesList");
         list.insertBefore(newNode, list.children[0]);
         //document.getElementById("messagesList").insertBefore(newnode, list.children[0]);
@@ -15,10 +15,10 @@
         // We can assign user-supplied strings to an element's textContent because it
         // is not interpreted as markup. If you're assigning in any other way, you 
         // should be aware of possible script injection concerns.
-        newNode.textContent = `${user} says ${message}`;
+        newNode.textContent = `${user} --- ${message}`;
 
-        if (user == "1") {
-            newNode.fontcolor("red");
+    if (user == "1") {
+        newNode.style.color = "red";
         }
 
         

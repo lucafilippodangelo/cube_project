@@ -3,6 +3,7 @@ using EventBusRabbitMQ.Events;
 using Newtonsoft.Json;
 using RabbitMQ.Client;
 using System;
+using System.Diagnostics;
 using System.Text;
 
 namespace EventBusRabbitMQ.Producer
@@ -88,17 +89,29 @@ namespace EventBusRabbitMQ.Producer
         {
             using (var channel = _connection.CreateModel())
             {
-                channel.QueueDeclare(queue: queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+                try
+                {
+                    channel.QueueDeclare(queue: queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
 
-                var message = JsonConvert.SerializeObject(publishModel);
-                var body = Encoding.UTF8.GetBytes(message);
+                    var message = JsonConvert.SerializeObject(publishModel);
+                    var body = Encoding.UTF8.GetBytes(message);
 
-                IBasicProperties properties = channel.CreateBasicProperties();
-                properties.Persistent = true;
-                properties.DeliveryMode = 2;
+                    //TEMP FOR DEBUG
+                    Debug.WriteLine("PUBLISHinQUEUE->" + queueName + " message->"+ message);
+                    //TEMP FOR DEBUG (END)
 
-                channel.ConfirmSelect();
-                channel.BasicPublish(exchange: "", routingKey: queueName, mandatory: true, basicProperties: properties, body: body);
+                    IBasicProperties properties = channel.CreateBasicProperties();
+                    properties.Persistent = true;
+                    properties.DeliveryMode = 2;
+
+                    channel.ConfirmSelect();
+                    channel.BasicPublish(exchange: "", routingKey: queueName, mandatory: true, basicProperties: properties, body: body);
+                }
+                catch (Exception ex)
+                {
+                    throw;
+                }
+               
             }
         }
 

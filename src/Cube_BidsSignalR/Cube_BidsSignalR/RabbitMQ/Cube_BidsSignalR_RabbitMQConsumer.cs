@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System;
+using System.Diagnostics;
 using System.Text;
 
 namespace Cube_BidsSignalR.RabbitMQ
@@ -44,7 +45,11 @@ namespace Cube_BidsSignalR.RabbitMQ
                 var message = Encoding.UTF8.GetString(e.Body.Span);
                 var Event = JsonConvert.DeserializeObject<BidFinalizationEvent>(message);
 
-                await _hub.Clients.All.SendAsync("ReceiveMessage", " - ", message);
+                //TEMP FOR DEBUG
+                Debug.WriteLine("CONSUMER 003 ->" + message);
+                //TEMP FOR DEBUG (END)
+
+                await _hub.Clients.All.SendAsync("ReceiveMessage", "Status: "+Event.Status, message);
             }
         }
 
