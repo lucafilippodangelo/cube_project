@@ -97,7 +97,7 @@ namespace EventBusRabbitMQ.Producer
                     var body = Encoding.UTF8.GetBytes(message);
 
                     //TEMP FOR DEBUG
-                    Debug.WriteLine("PUBLISHinQUEUE->" + queueName + " message->"+ message);
+                    Debug.WriteLine("PUSH in QUEUE: " + queueName + " - message->"+ message);
                     //TEMP FOR DEBUG (END)
 
                     IBasicProperties properties = channel.CreateBasicProperties();

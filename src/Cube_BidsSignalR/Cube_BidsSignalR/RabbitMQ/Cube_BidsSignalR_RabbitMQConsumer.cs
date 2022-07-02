@@ -46,7 +46,7 @@ namespace Cube_BidsSignalR.RabbitMQ
                 var Event = JsonConvert.DeserializeObject<BidFinalizationEvent>(message);
 
                 //TEMP FOR DEBUG
-                Debug.WriteLine("CONSUMER 003 ->" + message);
+                Debug.WriteLine("CONSUME QUEUE_BidFinalization ->" + message);
                 //TEMP FOR DEBUG (END)
 
                 await _hub.Clients.All.SendAsync("ReceiveMessage", "Status: "+Event.Status, message);

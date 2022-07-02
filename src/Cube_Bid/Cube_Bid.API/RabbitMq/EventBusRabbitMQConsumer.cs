@@ -84,7 +84,7 @@ namespace Cube_Bid.API.RabbitMq
                 var message = Encoding.UTF8.GetString(e.Body.Span);
                 var Event = JsonConvert.DeserializeObject<BidCreationEvent>(message);
                 //TEMP FOR DEBUG
-                Debug.WriteLine("CONSUMER 002 ->" + message);
+                Debug.WriteLine("CONSUME QUEUE_BidCreation ->" + message);
                 //TEMP FOR DEBUG (END)
 
 
@@ -99,7 +99,7 @@ namespace Cube_Bid.API.RabbitMq
                     aBid.DateTime = DateTime.UtcNow;
                     aBid.DateTimeMilliseconds = aBid.DateTime.Millisecond;
                     await _bidRepositoryMongo.Create(aBid);
-                    Debug.WriteLine("STORE MONGO WRITE ->" + aBid.BidName);
+                    Debug.WriteLine("MONGO CREATE ->" + aBid.BidName);
                 }
                 catch (Exception ex)
                 {
@@ -114,7 +114,7 @@ namespace Cube_Bid.API.RabbitMq
                     aBid.confirmed = validationResponse;
                     aBid.BidName = aBid.BidName + (" - Updated at " + DateTime.UtcNow + " by thread: " + Thread.CurrentThread.ManagedThreadId.ToString());
                     _bidRepositoryMongo.Update(aBid);
-                    Debug.WriteLine("STORE MONGO UPDATE ->" + aBid.BidName);
+                    Debug.WriteLine("MONGO UPDATE ->" + aBid.BidName);
 
 
                     //LD STEP THREE: create finalization event and update queue
@@ -123,7 +123,7 @@ namespace Cube_Bid.API.RabbitMq
                         BidFinalizationEvent eventMessage = new BidFinalizationEvent();
                         eventMessage.BasicLog = aBid.BidName;
                         eventMessage.Status = aBid.confirmed;
-                        Debug.WriteLine("UPDATE QUEUE FINALIZATION ->" + aBid.BidName);
+                        Debug.WriteLine("PUSH in QUEUE: QUEUE_BidFinalization" + " - message" + aBid.BidName);
                         _eventBus.PublishBidStatusFinalization(EventBusConstants.QUEUE_BidFinalization, eventMessage); //need to create event object
                     }
                     catch (Exception ex)
