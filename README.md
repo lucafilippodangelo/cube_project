@@ -22,11 +22,13 @@ There are a couple of microservices which implemented **e-commerce** modules ove
 docker-compose -f docker-compose.yml -f docker-compose.override.yml up –d
 ```
 3. You can **launch microservices** as below urls:
-* **RabbitMQ -> http://localhost:15672/**
-* **Catalog API -> http://localhost:8000/swagger/index.html**
-* **Basket API -> http://localhost:8001/swagger/index.html**
-* **Order API -> http://localhost:8002/swagger/index.html**
-* **API Gateway -> http://localhost:7000/Order?username=swn**
-* **Web UI -> http://localhost:8003/**
+* **RabbitMQ -> http://localhost:15672/** guest-guest
+* **Web UI "cube_bidsignalr" -> http://localhost:9008/**
+* **Web UI "cube_bidapi" -> http://localhost:8008/swagger/index.html**
+* **Web UI "cube_auctionapi" -> http://localhost:8007/swagger/index.html**
 
-5. Launch http://localhost:8003/ in your browser to view the Web UI. You can use Web project in order to **call microservices over API Gateway**. When you **checkout the basket** you can follow **queue record on RabbitMQ dashboard**.
+4. Microservides need to run in background:
+* **mongo** 
+* **redis**
+* **orderdb**
+
