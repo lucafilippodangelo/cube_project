@@ -81,7 +81,7 @@ namespace BidTests
             BidValidator _bidValidator = new BidValidator(service.Object);
 
 
-            //Methid call
+            //Method call
             var resultFromValidator = _bidValidator.ValidateInputBid(new Bid() {  AuctionId = eventId,  DateTime = aBidDatetime , DateTimeMilliseconds = aBidDatetimeMillisecond});
 
             Assert.Equal(resultFromValidator, expectedResult);
