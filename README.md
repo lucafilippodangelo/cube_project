@@ -1,6 +1,6 @@
 Overall picture
 
-![Whiteboard](https://github.com/lucafilippodangelo/cube_project/tree/master/Images/20220612_170319.jpg)
+![Whiteboard](Images/20220612_170319.jpg)
 
 There are a couple of microservices which implemented **e-commerce** modules over **Product, Basket** and **Ordering** microservices with **NoSQL (MongoDB, Redis)** and **Relational databases (Sql Server)** with communicating over **RabbitMQ Event Driven Communication** and using **Ocelot API Gateway**.
 
