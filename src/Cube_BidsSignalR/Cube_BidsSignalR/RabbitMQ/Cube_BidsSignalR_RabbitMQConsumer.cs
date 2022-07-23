@@ -49,7 +49,7 @@ namespace Cube_BidsSignalR.RabbitMQ
                 Debug.WriteLine("CONSUME QUEUE_BidFinalization ->" + message);
                 //TEMP FOR DEBUG (END)
 
-                await _hub.Clients.All.SendAsync("ReceiveMessage", "Status: "+Event.Status, message);
+                await _hub.Clients.All.SendAsync("ReceiveMessage", "", message);
             }
         }
 

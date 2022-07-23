@@ -11,6 +11,7 @@ using RabbitMQ.Client.Events;
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -92,7 +93,15 @@ namespace Cube_Bid.API.RabbitMq
                 Bid aBid = new Bid();
                 try
                 {
-                    aBid.BidName = ("n." + Event.IncrementalId + " - Created at " + DateTime.UtcNow + " by thread: " + Thread.CurrentThread.ManagedThreadId.ToString());
+
+                    string hostName = Dns.GetHostName(); // Retrive the Name of HOST
+                    string myIP = Dns.GetHostByName(hostName).AddressList[0].ToString();
+                    
+                    aBid.BidName = (" ID: " + Event.IncrementalId 
+                                         + " - Created at " + DateTime.UtcNow 
+                                         + " by thread: " + Thread.CurrentThread.ManagedThreadId.ToString()
+                                         + " by IP: " + myIP
+                                         );
                     aBid.AuctionId = Event.AuctionId;
                     aBid.Amount = Event.Amount;
                     aBid.confirmed = 0; //LD by default is in "Pending status"
