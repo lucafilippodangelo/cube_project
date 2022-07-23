@@ -109,7 +109,6 @@ namespace Cube_Bid.API.RabbitMq
                 //LD STEP TWO -> validate bid already stored in mongo (parallel threads)
                 var t = Task.Run(() => 
                 {
-
                     var validationResponse = _bidValidator.ValidateInputBid(aBid);//validation by creation date. REDIS is used as source for auction data events comparison
                     aBid.confirmed = validationResponse;
                     aBid.BidName = aBid.BidName + (" - Updated at " + DateTime.UtcNow + " by thread: " + Thread.CurrentThread.ManagedThreadId.ToString());

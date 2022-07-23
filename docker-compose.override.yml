@@ -78,6 +78,25 @@ services:
         ports:
             - "8008:80"
 
+
+    cube_bid.api_clone:
+        container_name: cube_bidapi_clone
+        restart: on-failure
+        environment:
+            - ASPNETCORE_ENVIRONMENT=Development
+            - "ConnectionStrings:Redis=db_redis:6379"
+            - "BidMongoDatabaseSettings:ConnectionString=mongodb://mongo:27017"
+            - "EventBus:HostName=rabbitmq"
+        depends_on:
+            - db_mongo
+            - db_redis
+            - rabbitmq 
+        networks:
+            - app-tier
+        ports:
+            - "8009:80"
+
+
     cube_bidssignalr:
         container_name: cube_bidssignalr
         restart: on-failure
