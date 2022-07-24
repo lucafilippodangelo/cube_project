@@ -42,30 +42,4 @@ services:
             dockerfile: src/Cube_BidsSignalR/Cube_BidsSignalR/Dockerfile
 
 
-    #catalog.api:
-    #    image: ${DOCKER_REGISTRY-}catalogapi
-    #    build:
-    #        context: .
-    #        dockerfile: src/Catalog/Catalog.API/Dockerfile
-
-    #basket.api:
-    #    image: ${DOCKER_REGISTRY-}basketapi
-    #    build:
-    #        context: .
-    #        dockerfile: src/Basket/Basket.API/Dockerfile
-
-    #ordering.api:
-    #    image: ${DOCKER_REGISTRY-}orderingapi
-    #    build:
-    #        context: .
-    #        dockerfile: src/Ordering/Ordering.API/Dockerfile
-
-    #apigateway:
-    #    image: ${DOCKER_REGISTRY-}apigateway
-    #    build:
-    #        context: .
-    #        dockerfile: src/ApiGateway/APIGateway/Dockerfile
-
-
-
 
