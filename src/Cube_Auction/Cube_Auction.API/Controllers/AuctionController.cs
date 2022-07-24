@@ -53,7 +53,7 @@ namespace Cube_Auction.API.Controllers
             return Ok(auctions);
         }
 
-       
+
         /// <summary>
         /// I use this endpoint to create an auction with relate default history (creation and expire time)
         /// And send the events to a queue Bid service will listen
@@ -82,7 +82,7 @@ namespace Cube_Auction.API.Controllers
             AuctionHistoryCommand anAuctionHistoryCommandTwo = new AuctionHistoryCommand()
             {   AuctionId = result.Id,
                 AuctionStatus = AuctionStatus.Finalised,
-                DateTimeEvent = anAuctionHistoryCommand.DateTimeEvent.AddSeconds(5),
+                DateTimeEvent = anAuctionHistoryCommand.DateTimeEvent.AddSeconds(2),
                 DateTimeEventMilliseconds = anAuctionHistoryCommand.DateTimeEventMilliseconds
             };
             await _repository.PostAuctionHistory(anAuctionHistoryCommandTwo);
@@ -107,7 +107,7 @@ namespace Cube_Auction.API.Controllers
             }
 
 
-            await TEST_postAuctionAndCreateBidsForIt(result.Id, numberOfBids);
+            await CreateBidsForAuction(result.Id, numberOfBids);
 
             return Ok(result);
         }
@@ -118,7 +118,7 @@ namespace Cube_Auction.API.Controllers
         /// <returns></returns>
         [HttpPost]
         [ProducesResponseType(typeof(AuctionResponse), (int)HttpStatusCode.OK)]
-        private async Task<IActionResult> TEST_postAuctionAndCreateBidsForIt(Guid auctionId, int numberOfBids)
+        public async Task<IActionResult> CreateBidsForAuction(Guid auctionId, int numberOfBids)
         {
             for (int i = 0; i < numberOfBids; i++)
             {

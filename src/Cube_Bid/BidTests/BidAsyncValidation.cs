@@ -33,15 +33,15 @@ namespace BidTests
                         "03359e80-02e2-4dba-9d7d-d941e9d96056 3 06/03/2022 14:43:34 174",
                         Convert.ToDateTime("06/03/2022 14:43:35"),
                         400,
-                        2},
+                        "not_valid"},
 
                     //Case it is VALID because bid is done before auction expires
                     new object[] {
                         new Guid("03359e80-02e2-4dba-9d7d-d941e9d96056"),
                         "03359e80-02e2-4dba-9d7d-d941e9d96056 3 06/03/2022 14:43:34 174",
                         Convert.ToDateTime("06/03/2022 14:43:33"),
-                        400, 
-                        1},
+                        400,
+                        "VALID"},
                     
                     //Case it is VALID because bid is done before/"equal date" auction expires AND bidMilliseconds are <= to eventMilliseconds
                     new object[] {
@@ -49,7 +49,7 @@ namespace BidTests
                         "03359e80-02e2-4dba-9d7d-d941e9d96056 3 06/03/2022 14:43:34 174",
                         Convert.ToDateTime("06/03/2022 14:43:34"),
                         174,
-                        1},
+                        "VALID"},
 
                     //Case it is NOT VALID because bid is done before/"equal date" auction expires AND bidMilliseconds are > to eventMilliseconds
                     new object[] {
@@ -57,7 +57,7 @@ namespace BidTests
                         "03359e80-02e2-4dba-9d7d-d941e9d96056 3 06/03/2022 14:43:34 174",
                         Convert.ToDateTime("06/03/2022 14:43:34"),
                         175,
-                        2}
+                        "not_valid"}
                 };
 
             public IEnumerator<object[]> GetEnumerator() => _data.GetEnumerator();
@@ -68,7 +68,7 @@ namespace BidTests
 
         [Theory]
         [ClassData(typeof(TestDataGenerator))]
-        public void TestBidValidator(Guid eventId, string finalisedEventFromRedis, DateTime aBidDatetime, int aBidDatetimeMillisecond, int expectedResult)
+        public void TestBidValidator(Guid eventId, string finalisedEventFromRedis, DateTime aBidDatetime, int aBidDatetimeMillisecond, string expectedResult)
         {
             //Arrange
             List<string> aListOfEvents = new List<string>() { finalisedEventFromRedis };

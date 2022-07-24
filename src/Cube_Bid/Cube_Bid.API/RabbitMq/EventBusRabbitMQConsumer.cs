@@ -104,7 +104,7 @@ namespace Cube_Bid.API.RabbitMq
                                          );
                     aBid.AuctionId = Event.AuctionId;
                     aBid.Amount = Event.Amount;
-                    aBid.confirmed = 0; //LD by default is in "Pending status"
+                    aBid.confirmed = "pending"; //LD by default is in "Pending status"
                     aBid.DateTime = DateTime.UtcNow;
                     aBid.DateTimeMilliseconds = aBid.DateTime.Millisecond;
                     await _bidRepositoryMongo.Create(aBid);

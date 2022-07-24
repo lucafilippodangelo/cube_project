@@ -23,6 +23,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\Cube_Auction\Cube_Auction.API\Cube_Auction.API.csproj" />
     <ProjectReference Include="..\Cube_Bid.API\Cube_Bid.API.csproj" />
   </ItemGroup>
 

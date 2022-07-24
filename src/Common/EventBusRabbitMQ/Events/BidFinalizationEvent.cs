@@ -6,6 +6,6 @@ namespace EventBusRabbitMQ.Events
     {
         public string BasicLog { get; set; }
 
-        public int Status { get; set; }
+        public string Status { get; set; }
     }
 }

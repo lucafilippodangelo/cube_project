@@ -7,7 +7,7 @@ namespace Cube_Bid.API
 {
     public interface IBidValidator
     {
-        int ValidateInputBid(Bid aBid);
+        string ValidateInputBid(Bid aBid);
     }
 
     
@@ -24,7 +24,7 @@ namespace Cube_Bid.API
 
         //NEED UT
 
-        public int ValidateInputBid(Bid aBid)
+        public string ValidateInputBid(Bid aBid)
         {
             //pick the first one with value 3
             var auctionEventsList = _auctionsHistoryRepositoryRedis.GetAuctionsHistoriesBYAuctionIdAndEventId(aBid.AuctionId, 3);
@@ -42,22 +42,22 @@ namespace Cube_Bid.API
             if (aBid.DateTime.CompareTo(parsedTime) > 0)
             {
                 
-                return 2; //so if Bid datetime is later than "parsedTime" return "2", means "not valid"
+                return "not_valid"; //so if Bid datetime is later than "parsedTime" return "2", means "not valid"
             }
             else if (aBid.DateTime.CompareTo(parsedTime) < 0)
             {
-                return 1; //"one" means valid
+                return "VALID"; //"one" means valid
             }
             else if (aBid.DateTimeMilliseconds > int.Parse(timeMilliseconds)) //in case it is equal then compare milliseconds
             {
-                return 2; //"two" means not valid
+                return "not_valid"; //"two" means not valid
             }
             else if (aBid.DateTimeMilliseconds <= int.Parse(timeMilliseconds)) 
             {
-                return 1; //"one" means valid
+                return "VALID"; //"one" means valid
             }
             else {
-                return 1; //return not valid by default
+                return "not_valid"; //return not valid by default
             }
 
         }
