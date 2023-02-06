@@ -20,6 +20,8 @@ namespace Cube_Auction.Infrastructure.Repository
 
         public async Task<IEnumerable<Auction>> GetAuctions()
         {
+            //Adding a Logget functionality when getting auctions
+
             var auctionList = await _dbContext.Auctions
                       .ToListAsync();
 
